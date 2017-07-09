@@ -20,7 +20,11 @@
         <service
             android:name=".MyService"
             android:enabled="true"
-            android:process=".newProcess"
+            android:exported="true"
+            android:process=".newProcess" />
+        <service
+            android:name=".secondService"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 

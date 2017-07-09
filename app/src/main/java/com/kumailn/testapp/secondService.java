@@ -7,8 +7,8 @@ import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
-public class MyService extends Service {
-    public MyService() {
+public class secondService extends Service {
+    public secondService() {
     }
 
     @Override
@@ -23,9 +23,7 @@ public class MyService extends Service {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        Toast.makeText(this, "Works", Toast.LENGTH_SHORT).show();
-
+        Toast.makeText(this, "Second Service Works", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent, flags, startId);
     }
 }

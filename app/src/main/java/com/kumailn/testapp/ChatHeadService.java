@@ -59,15 +59,20 @@ public class ChatHeadService extends Service {
         TextView primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
         TextView secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
         LinearLayout buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
-
         RelativeLayout closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
         final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
+
+        Animation floatingButton = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_open_button);
+        chatHeadImage.setAnimation(floatingButton);
+
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Animation expandOut = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_close);
-                relativeLayout.startAnimation(expandOut);
+                if (relativeLayout.getVisibility() == View.VISIBLE) {
+                    relativeLayout.startAnimation(expandOut);
+                }
                 closeButton.startAnimation(expandOut);
                 chatHeadImage.startAnimation(expandOut);
 
@@ -116,6 +121,8 @@ public class ChatHeadService extends Service {
                             Animation expandIn = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation);
                             relativeLayout.startAnimation(expandIn);
                         } else {
+                            Animation expandOut = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_close);
+                            relativeLayout.startAnimation(expandOut);
                             primaryTV.setVisibility(View.GONE);
                             secondaryTV.setVisibility(View.GONE);
                             buttonLL.setVisibility(View.GONE);

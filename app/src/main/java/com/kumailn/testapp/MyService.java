@@ -1,5 +1,4 @@
 package com.kumailn.testapp;
-
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -26,15 +25,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
-
-
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MyService extends Service {
     public static int num_clips;
-
     public static boolean currencySymbolDetected;
     public static boolean currencyCodeDetected;
     public static boolean currencyDetected;
@@ -52,7 +48,6 @@ public class MyService extends Service {
         }
     };
 
-
     public MyService() {
     }
 
@@ -65,7 +60,6 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
-        parseJSON(21, 32);
         num_clips = 0;
     }
 
@@ -101,7 +95,7 @@ public class MyService extends Service {
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cb.hasPrimaryClip()) {
-
+            //Switch all values to false/empty on each copy
             currencyCodeDetected = false;
             currencySymbolDetected = false;
             currencyDetected = false;
@@ -115,6 +109,8 @@ public class MyService extends Service {
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
+
+            //Detect if the clipped string has a currency symbol
             for (char item : clippedString.toCharArray()){
                 //Checks for currency symbols
                 if(Character.getType(item) == Character.CURRENCY_SYMBOL){
@@ -124,9 +120,6 @@ public class MyService extends Service {
                     currencyDetected = true;
                 }
                 //TODO: Fix this, redundant looping
-                else if(clippedString.toUpperCase().contains(" BTC ")){
-
-                }
                 else{
                     // Checks for currency codes
                     for(int i = 0; i < c_codes.size(); i++){
@@ -135,7 +128,10 @@ public class MyService extends Service {
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
                             currencyCodeDetected = true;
                             currencyDetected = true;
+/*
                             currencyCode = Currency.getInstance((c_codes.get(i))).getSymbol();
+*/
+                            currencyCode = (c_codes.get(i));
                         }
                     }
                 }
@@ -174,12 +170,22 @@ public class MyService extends Service {
             if (currencyDetected) {
                 String currencyValue = clippedString.replaceAll(" ", "");
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
-                if (currencySymbolDetected) {
+                if(currencySymbolDetected){
                     Log.e("(S)VALUE: ", currencyValue);
                 }
-                if (currencyCodeDetected) {
+                else{
                     Log.e("(C)VALUE: ", currencyValue);
+                    String cc = currencyCode.replaceAll(" ", "");
+                    Log.e("CODEIS: ", cc);
+                    String resultConversion = parseJSON(cc, currencyValue);
+                    try{
+                        Log.e("CONVERTED: ", resultConversion);
+                    }
+                    catch (Exception e){}
+
+
                 }
+
             }
             if(emailDetected) {
                 Log.e("(E)VALUE: ", email);
@@ -216,23 +222,27 @@ public class MyService extends Service {
     }
 
     com.android.volley.RequestQueue requestQueue;
-    public void parseJSON(double lat, double lon){
+    public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "https://api.myjson.com/bins/1gjfk5";
-        Log.e(String.valueOf(lat),String.valueOf(lon));
+        final String[] convertResult = new String[1];
         Log.e(jsonURL, "");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        double conversion = 1;
                         try {
                             String aaa = response.getJSONArray("to").getJSONObject(0).getString("mid");
 
                             //JSONArray jsonArray = response.getJSONArray("name");
                             for (int i = 0; i < 400; i++){
                                 String abc = response.getJSONArray("to").getJSONObject(i).getString("mid");
-                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals("CAD")){
+                                convertResult[0] = abc;
+                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
                                     Log.e("VALUEFOUND: ", abc);
+                                    conversion = Double.parseDouble(number) / Double.parseDouble(abc);
+                                    Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     break;
                                 }
                             }
@@ -255,6 +265,6 @@ public class MyService extends Service {
 
 
         requestQueue.add(jsonObjectRequest);
-
+        return convertResult[0];
     }
 }

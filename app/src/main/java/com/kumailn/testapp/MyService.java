@@ -151,7 +151,6 @@ public class MyService extends Service {
                     if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
                         emailDetected = true;
                     }
-
                 }
                 //Check for phone number
                 else {

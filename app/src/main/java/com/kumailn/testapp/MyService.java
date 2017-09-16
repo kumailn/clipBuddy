@@ -91,7 +91,7 @@ public class MyService extends Service {
         return START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
     }
-
+        //test git
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cb.hasPrimaryClip()) {

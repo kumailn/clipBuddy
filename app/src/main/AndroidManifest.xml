@@ -25,6 +25,10 @@
         <service
             android:name=".secondService"
             android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".boundServiceOne"
+            android:enabled="true"
             android:exported="true"></service>
     </application>
 

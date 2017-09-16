@@ -145,10 +145,13 @@ public class ChatHeadService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        //Types = EMAIL, CURRENCY, PHONE
         String data_type = intent.getStringExtra("TYPE");
         String original_value = intent.getStringExtra("ORIGINAL");
         String converted_value = intent.getStringExtra("CONVERTED");
         String currency_code = intent.getStringExtra("CODE");
+        String email_address = intent.getStringExtra("EMAILADDRESS");
+        String phone_number = intent.getStringExtra("PHONENUMBER");
 
 
         return START_NOT_STICKY;

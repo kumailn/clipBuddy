@@ -86,7 +86,7 @@ public class MyService extends Service {
         }*/
 
 
-        Toast.makeText(this, "Works", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Welcome to Clip Buddy!", Toast.LENGTH_SHORT).show();
 
         return START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
@@ -151,9 +151,13 @@ public class MyService extends Service {
                 //Check for phone number
                 else {
                 //TODO: look at finding out where the call is going to? (international codes)
-                //TODO: make the parsing/detection a bit better
+                //Takes the first block of non-letters. and looks for a sub-block of 7<n<15 numbers
                     phoneSend = clippedString.replaceAll(" ", "");
-                    phoneSend = phoneSend.replaceAll("[^\\d]", "");
+                    int i = 0;
+                    while (i < phoneSend.length() && !Character.isDigit(phoneSend.charAt(i))) i++;
+                    int j = i;
+                    while (j < phoneSend.length() && !Character.isAlphabetic(phoneSend.charAt(j))) j++;
+                    phoneSend = phoneSend.substring(i, j).replaceAll("[^\\d]", "");
                     if (phoneSend.length() > 7 && phoneSend.length() < 15) {
                         phoneDetected = true;
                     } else {

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
+import android.support.annotation.IntDef;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -143,7 +144,18 @@ public class ChatHeadService extends Service {
 
     }
 
-    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        String data_type = intent.getStringExtra("TYPE");
+        String original_value = intent.getStringExtra("ORIGINAL");
+        String converted_value = intent.getStringExtra("CONVERTED");
+        String currency_code = intent.getStringExtra("CODE");
+
+
+        return START_NOT_STICKY;
+    }
+
+
+        @Override
     public void onDestroy() {
         super.onDestroy();
         if (mChatHeadView != null) mWindowManager.removeView(mChatHeadView);

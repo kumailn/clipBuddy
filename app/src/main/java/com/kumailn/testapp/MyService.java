@@ -174,10 +174,20 @@ public class MyService extends Service {
                     Log.e("(S)VALUE: ", currencyValue);
                 }
                 else{
+                    // If code is available
                     Log.e("(C)VALUE: ", currencyValue);
                     String cc = currencyCode.replaceAll(" ", "");
                     Log.e("CODEIS: ", cc);
                     String resultConversion = parseJSON(cc, currencyValue);
+                    Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                    ii.putExtra("TYPE", "CURRENCY");
+                    ii.putExtra("ORIGINAL", currencyValue);
+                    ii.putExtra("CONVERTED", resultConversion);
+                    ii.putExtra("CODE", cc);
+
+                    if (num_clips > 0){
+                        startService(ii);
+                    }
                     try{
                         Log.e("CONVERTED: ", resultConversion);
                     }
@@ -207,10 +217,7 @@ public class MyService extends Service {
                     e.printStackTrace();
                 }
             }
-            if(num_clips > 0){
-                Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
-                startService(ii);
-            }
+
             num_clips += 1;
         }
     }

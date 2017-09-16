@@ -24,6 +24,7 @@ import static com.kumailn.testapp.R.attr.height;
 public class ChatHeadService extends Service {
     private WindowManager mWindowManager;
     private View mChatHeadView;
+    private boolean isActivited = false;
 
 
     public ChatHeadService() {
@@ -79,14 +80,25 @@ public class ChatHeadService extends Service {
                     case MotionEvent.ACTION_UP:
                         RelativeLayout relativeLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.container_rl);
                         TextView primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
-                        primaryTV.setVisibility(View.VISIBLE);
                         TextView secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
-                        secondaryTV.setVisibility(View.VISIBLE);
                         LinearLayout buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
-                        buttonLL.setVisibility(View.VISIBLE);
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        Animation expandIn = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation);
-                        relativeLayout.startAnimation(expandIn);
+
+                        if (!isActivited){
+                            primaryTV.setVisibility(View.VISIBLE);
+                            secondaryTV.setVisibility(View.VISIBLE);
+                            buttonLL.setVisibility(View.VISIBLE);
+                            relativeLayout.setVisibility(View.VISIBLE);
+
+                            Animation expandIn = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation);
+                            relativeLayout.startAnimation(expandIn);
+                        } else {
+                            primaryTV.setVisibility(View.GONE);
+                            secondaryTV.setVisibility(View.GONE);
+                            buttonLL.setVisibility(View.GONE);
+                            relativeLayout.setVisibility(View.GONE);
+                        }
+
+                        isActivited = !isActivited;
                         break;
 
                     case MotionEvent.ACTION_MOVE:

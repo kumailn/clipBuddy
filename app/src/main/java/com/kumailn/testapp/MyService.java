@@ -37,6 +37,9 @@ public class MyService extends Service {
 
     public static boolean currencySymbolDetected;
     public static boolean currencyCodeDetected;
+    public static boolean currencyDetected;
+    public static boolean emailDetected;
+    public static boolean phoneDetected;
 
     private XecdApiService apiService;
 
@@ -101,8 +104,14 @@ public class MyService extends Service {
 
             currencyCodeDetected = false;
             currencySymbolDetected = false;
+            currencyDetected = false;
+            emailDetected = false;
+            phoneDetected = false;
             String currencySymbol = "";
             String currencyCode = "";
+            String email = "";
+            String phoneNum = "";
+            String phoneSend = "";
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
@@ -112,6 +121,7 @@ public class MyService extends Service {
                     Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
                     currencySymbol = String.valueOf(item);
                     currencySymbolDetected = true;
+                    currencyDetected = true;
                 }
                 //TODO: Fix this, redundant looping
                 else if(clippedString.toUpperCase().contains(" BTC ")){
@@ -124,21 +134,62 @@ public class MyService extends Service {
                             //gets 3 Character currency code and gets corresponding symbol
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
                             currencyCodeDetected = true;
+                            currencyDetected = true;
                             currencyCode = Currency.getInstance((c_codes.get(i))).getSymbol();
                         }
                     }
                 }
-            }
+                //Checks and (sort of) validates email
+                if (clippedString.contains("@")) {
+                    String[] parts = clippedString.split(" ");
+                    for (String word : parts) {
+                        if (word.contains("@")) {
+                            email = word;
+                            break;
+                        }
+                    }
+                    if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
+                        emailDetected = true;
+                    }
 
-            if(currencySymbolDetected == true){
-                String currencyValue = clippedString.replaceAll(" ", "");;
-                currencyValue = currencyValue.replaceAll("[^\\d.]", "");
-                Log.e("(S)VALUE: ", currencyValue);
+                }
+                //Check for phone number
+                else {
+                //TODO: look at finding out where the call is going to? (international codes)
+                //TODO: make the parsing/detection a bit better
+                    phoneSend = clippedString.replaceAll(" ", "");
+                    phoneSend = phoneSend.replaceAll("[^\\d]", "");
+                    if (phoneSend.length() > 7 && phoneSend.length() < 15) {
+                        phoneDetected = true;
+                    } else {
+                        break;
+                    }
+                    if (phoneSend.length() == 10) {  //probably a local canadian/us number?
+                        phoneNum = String.format("(%s) %s-%s", phoneSend.substring(0,3), phoneSend.substring(3,6),
+                                phoneSend.substring(6,10));
+                    } else {
+                        phoneNum = phoneSend;
+                    }
+                }
             }
-            else if(currencyCodeDetected == true){
+            if (currencyDetected) {
                 String currencyValue = clippedString.replaceAll(" ", "");
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
-                Log.e("(C)VALUE: ", currencyValue);
+                if (currencySymbolDetected) {
+                    Log.e("(S)VALUE: ", currencyValue);
+                }
+                if (currencyCodeDetected) {
+                    Log.e("(C)VALUE: ", currencyValue);
+                }
+            }
+            if(emailDetected) {
+                Log.e("(E)VALUE: ", email);
+            }
+            if (phoneDetected) {
+                //phoneNum is the nicely formatted string to display on the screen for 10 digit numbers
+                //e.g. (123) 456-7890
+                //phoneSend is the string 1234567890 to send to android
+                Log.e("(P)VALUE: ", phoneNum);
             }
             if (cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
 

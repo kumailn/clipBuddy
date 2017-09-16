@@ -3,6 +3,7 @@ package com.kumailn.testapp;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.IntDef;
 import android.view.Gravity;
@@ -19,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static android.R.attr.data;
 import static android.R.attr.width;
 import static com.kumailn.testapp.R.attr.height;
 
@@ -153,6 +155,13 @@ public class ChatHeadService extends Service {
         String email_address = intent.getStringExtra("EMAILADDRESS");
         String phone_number = intent.getStringExtra("PHONENUMBER");
 
+        if (data_type.equals("PHONE")){
+            passPhoneIntent(phone_number);
+        }
+        else if(data_type.equals("EMAIL")){
+            passEmailIntent(email_address);
+        }
+
 
         return START_NOT_STICKY;
     }
@@ -162,5 +171,21 @@ public class ChatHeadService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mChatHeadView != null) mWindowManager.removeView(mChatHeadView);
+    }
+
+    public void passPhoneIntent(String phonenumber){
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel:" + phonenumber));
+        startActivity(intent);
+    }
+
+    public void passEmailIntent(String emailAddress){
+        Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not ACTION_SEND
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(Intent.EXTRA_TEXT, "");
+        intent.setData(Uri.parse("mailto:" + emailAddress)); // or just "mailto:" for blank
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        startActivity(intent);
     }
 }

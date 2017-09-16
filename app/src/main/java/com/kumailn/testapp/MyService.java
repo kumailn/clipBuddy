@@ -123,7 +123,7 @@ public class MyService extends Service {
                 else{
                     // Checks for currency codes
                     for(int i = 0; i < c_codes.size(); i++){
-                        if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ")) || (clippedString.toUpperCase().contains(" " + c_codes.get(i)))){
+                        if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ")) || (clippedString.toUpperCase().contains(" " + c_codes.get(i))) || (clippedString.toUpperCase().contains(c_codes.get(i) + " "))){
                             //gets 3 Character currency code and gets corresponding symbol
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
                             currencyCodeDetected = true;

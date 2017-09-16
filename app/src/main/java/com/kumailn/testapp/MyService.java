@@ -10,7 +10,6 @@ import android.net.http.RequestQueue;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,6 +21,7 @@ import com.xe.xecdApiClient.model.ConvertFromResponse;
 import com.xe.xecdApiClient.service.XecdApiService;
 import com.xe.xecdApiClient.service.XecdApiServiceFactory;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MyService extends Service {
+    public static int num_clips;
 
     public static boolean currencySymbolDetected;
     public static boolean currencyCodeDetected;
@@ -62,6 +63,7 @@ public class MyService extends Service {
         super.onCreate();
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
         parseJSON(21, 32);
+        num_clips = 0;
     }
 
     @Override
@@ -96,6 +98,7 @@ public class MyService extends Service {
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cb.hasPrimaryClip()) {
+
             currencyCodeDetected = false;
             currencySymbolDetected = false;
             String currencySymbol = "";
@@ -148,6 +151,11 @@ public class MyService extends Service {
                     e.printStackTrace();
                 }
             }
+            if(num_clips > 0){
+                Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                startService(ii);
+            }
+            num_clips += 1;
         }
     }
 

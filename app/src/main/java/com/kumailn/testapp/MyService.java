@@ -6,9 +6,16 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.media.audiofx.LoudnessEnhancer;
+import android.net.http.RequestQueue;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.xe.xecdApiClient.config.XecdApiConfigBean;
 import com.xe.xecdApiClient.exception.XecdApiException;
 import com.xe.xecdApiClient.model.ConvertFromResponse;
@@ -22,8 +29,13 @@ import java.util.Currency;
 
 
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MyService extends Service {
+
+    public static boolean currencySymbolDetected;
+    public static boolean currencyCodeDetected;
 
     private XecdApiService apiService;
 
@@ -49,14 +61,14 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
-
+        parseJSON(21, 32);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         performClipboardCheck();
 
-
+/*
         XecdApiConfigBean config = new XecdApiConfigBean();
         config.setAccountId("instituteofbusiness&technology450638369");
         config.setApiKey("48pnpljs0s6qqjcifmc2dap24q");
@@ -72,7 +84,7 @@ public class MyService extends Service {
 
         } catch (XecdApiException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         Toast.makeText(this, "Works", Toast.LENGTH_SHORT).show();
@@ -84,6 +96,10 @@ public class MyService extends Service {
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cb.hasPrimaryClip()) {
+            currencyCodeDetected = false;
+            currencySymbolDetected = false;
+            String currencySymbol = "";
+            String currencyCode = "";
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
@@ -91,6 +107,8 @@ public class MyService extends Service {
                 //Checks for currency symbols
                 if(Character.getType(item) == Character.CURRENCY_SYMBOL){
                     Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
+                    currencySymbol = String.valueOf(item);
+                    currencySymbolDetected = true;
                 }
                 //TODO: Fix this, redundant looping
                 else if(clippedString.toUpperCase().contains(" BTC ")){
@@ -102,9 +120,22 @@ public class MyService extends Service {
                         if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " "))){
                             //gets 3 Character currency code and gets corresponding symbol
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
+                            currencyCodeDetected = true;
+                            currencyCode = Currency.getInstance((c_codes.get(i))).getSymbol();
                         }
                     }
                 }
+            }
+
+            if(currencySymbolDetected == true){
+                String currencyValue = clippedString.replaceAll(" ", "");;
+                currencyValue = currencyValue.replaceAll("[^\\d.]", "");
+                Log.e("(S)VALUE: ", currencyValue);
+            }
+            else if(currencyCodeDetected == true){
+                String currencyValue = clippedString.replaceAll(" ", "");
+                currencyValue = currencyValue.replaceAll("[^\\d.]", "");
+                Log.e("(C)VALUE: ", currencyValue);
             }
             if (cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
 
@@ -124,5 +155,48 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
+    }
+
+    com.android.volley.RequestQueue requestQueue;
+    public void parseJSON(double lat, double lon){
+        requestQueue = Volley.newRequestQueue(this);
+        String jsonURL = "https://api.myjson.com/bins/1gjfk5";
+        Log.e(String.valueOf(lat),String.valueOf(lon));
+        Log.e(jsonURL, "");
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String aaa = response.getJSONArray("to").getJSONObject(0).getString("mid");
+
+                            //JSONArray jsonArray = response.getJSONArray("name");
+                            for (int i = 0; i < 400; i++){
+                                String abc = response.getJSONArray("to").getJSONObject(i).getString("mid");
+                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals("CAD")){
+                                    Log.e("VALUEFOUND: ", abc);
+                                    break;
+                                }
+                            }
+                            //Toast.makeText(MainActivity.this, "JSON WORKS", Toast.LENGTH_SHORT).show();
+                            Log.e("JSONVOLLEY", aaa);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", "ERROR");
+                    }
+                }
+        );
+
+
+
+        requestQueue.add(jsonObjectRequest);
+
     }
 }

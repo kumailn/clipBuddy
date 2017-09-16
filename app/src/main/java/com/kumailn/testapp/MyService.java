@@ -9,14 +9,23 @@ import android.media.audiofx.LoudnessEnhancer;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+import com.xe.xecdApiClient.config.XecdApiConfigBean;
+import com.xe.xecdApiClient.exception.XecdApiException;
+import com.xe.xecdApiClient.model.ConvertFromResponse;
+import com.xe.xecdApiClient.service.XecdApiService;
+import com.xe.xecdApiClient.service.XecdApiServiceFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
-import java.util.concurrent.TimeUnit;
+
+
+import org.apache.http.impl.client.HttpClients;
 
 public class MyService extends Service {
+
+    private XecdApiService apiService;
 
     ArrayList<String> c_codes = new ArrayList<String>(
             Arrays.asList("AFN", "ALL", "DZD", "USD", "EUR", "AOA", "XCD", "XCD", "ARS", "AMD", "AWG", "AUD", "EUR", "AZN", "BSD", "BHD", "BDT", "BBD", "BYR", "EUR", "BZD", "XOF", "BMD", "INR", "BOB", "BAM", "BWP",  "BRL",  "USD", "BND", "BGN", "XOF", "BIF", "KHR", "XAF", "CAD", "CVE", "USD", "KYD", "XAF", "XAF", "CLP", "CNY",   "COP", "KMF", "XAF",  "NZD", "CRC", "HRK", "CUP", "ANG", "EUR",  "XOF", "DKK", "DJF", "XCD", "DOP", "USD", "EGP", "USD", "XAF", "ERN", "EUR", "ETB", "FKP",  "FJD", "EUR", "EUR", "EUR", "XPF",  "XAF", "GMD", "GEL", "EUR", "GHS", "GIP", "EUR", "DKK", "XCD", "EUR", "USD", "GTQ", "GBP", "GNF", "XOF", "GYD", "USD",  "HNL",  "HUF", "ISK", "INR", "IDR", "IRR", "IQD", "EUR", "GBP", "ILS", "EUR", "JMD", "JPY", "GBP", "JOD", "KZT", "KES", "AUD", "KWD", "KGS", "LAK", "EUR", "LBP", "ZAR", "LRD", "LYD", "CHF", "EUR", "EUR", "MOP", "MKD", "MGA", "MWK", "MYR", "MVR", "XOF", "EUR", "USD", "EUR", "MRO", "MUR", "EUR", "MXN", "USD", "MDL", "EUR", "MNT", "EUR", "XCD", "MAD", "MZN", "MMK", "ZAR", "AUD", "NPR", "EUR", "XPF", "NZD", "NIO", "XOF", "NGN", "NZD", "AUD", "KPW", "USD", "NOK", "OMR", "PKR", "USD",  "USD", "PGK", "PYG", "PEN", "PHP", "NZD", "PLN", "EUR", "USD", "QAR", "RON", "RUB", "RWF", "EUR", "WST", "EUR", "SAR", "XOF", "RSD", "SCR", "SLL", "SGD", "ANG", "EUR", "EUR", "SBD", "SOS", "ZAR",  "KRW", "SSP", "EUR", "LKR", "EUR", "SHP", "XCD", "XCD", "EUR", "EUR", "XCD", "SDG", "SRD", "NOK", "SZL", "SEK", "CHF", "SYP", "STD",  "TJS", "TZS", "THB", "USD", "XOF", "NZD", "TOP", "TTD", "TND", "TRY", "TMT", "USD", "AUD",  "USD", "GBP", "USD", "UGX", "UAH", "AED", "UYU", "UZS", "VUV", "EUR", "VEF", "VND", "XPF", "MAD", "YER", "ZMW", "ZWL", "EUR"));
@@ -40,11 +49,31 @@ public class MyService extends Service {
     public void onCreate() {
         super.onCreate();
         ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).addPrimaryClipChangedListener(listener);
+
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         performClipboardCheck();
+
+
+        XecdApiConfigBean config = new XecdApiConfigBean();
+        config.setAccountId("instituteofbusiness&technology450638369");
+        config.setApiKey("48pnpljs0s6qqjcifmc2dap24q");
+        apiService = XecdApiServiceFactory.createXecdAPIService(config);
+
+        Double ii = Double.parseDouble("100");
+        try {
+            apiService.convertFrom("USD", "CAD", ii, false);
+            ConvertFromResponse aaa = apiService.convertFrom("USD", "CAD", ii, false);
+            String iii = aaa.getTerms();
+
+            Log.e("XE_RESULT: ", iii);
+
+        } catch (XecdApiException e) {
+            e.printStackTrace();
+        }
+
 
         Toast.makeText(this, "Works", Toast.LENGTH_SHORT).show();
 

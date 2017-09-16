@@ -22,6 +22,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import org.w3c.dom.Text;
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         Button myButton = (Button)findViewById(R.id.button);
         Button b2 = (Button)findViewById(R.id.button2);
         TextView mt = (TextView)findViewById(R.id.textView);
+        ImageView sm = (ImageView)findViewById(R.id.smileyView);
 
         //Non default toolbar creation
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -57,10 +59,19 @@ public class MainActivity extends AppCompatActivity {
             AlphaAnimation fadeIn = new AlphaAnimation(0.0f , 1.0f ) ;
             fadeIn.setInterpolator(new AccelerateInterpolator()); //and this
             fadeIn.setStartOffset(150);
-            fadeIn.setDuration(400);
-            AnimationSet animation = new AnimationSet(true); //change to false
+            fadeIn.setDuration(700);
+            AnimationSet animation = new AnimationSet(false); //change to false
             animation.addAnimation(fadeIn);
             mt.setAnimation(animation);
+
+            sm.setVisibility(View.VISIBLE);
+            AlphaAnimation fadeIn2 = new AlphaAnimation(0.0f , 1.0f ) ;
+            fadeIn2.setInterpolator(new AccelerateInterpolator()); //and this
+            fadeIn2.setStartOffset(250);
+            fadeIn2.setDuration(900);
+            AnimationSet animation2 = new AnimationSet(false); //change to false
+            animation2.addAnimation(fadeIn2);
+            sm.setAnimation(animation2);
 
             Intent i = new Intent(getApplicationContext(), MyService.class);
             Log.e("MyService: ", "Started ");

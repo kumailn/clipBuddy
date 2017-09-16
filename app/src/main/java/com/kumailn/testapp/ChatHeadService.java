@@ -55,16 +55,45 @@ public class ChatHeadService extends Service {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(mChatHeadView, params);
 
+        RelativeLayout relativeLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.container_rl);
+        TextView primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
+        TextView secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
+        LinearLayout buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
+
         RelativeLayout closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
+        final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
+
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Animation expandOut = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_close);
+                relativeLayout.startAnimation(expandOut);
+                closeButton.startAnimation(expandOut);
+                chatHeadImage.startAnimation(expandOut);
+
+                expandOut.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        stopSelf();
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+
+
                 //close the service and remove the chat head from the window
-                stopSelf();
+                //stopSelf();
             }
         });
 
-        final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
         chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -78,11 +107,6 @@ public class ChatHeadService extends Service {
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        RelativeLayout relativeLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.container_rl);
-                        TextView primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
-                        TextView secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
-                        LinearLayout buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
-
                         if (!isActivited){
                             primaryTV.setVisibility(View.VISIBLE);
                             secondaryTV.setVisibility(View.VISIBLE);

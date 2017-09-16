@@ -84,6 +84,8 @@ public class MyService extends Service {
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if (cb.hasPrimaryClip()) {
+            boolean isCurrency = false;
+            boolean isPhone = false;
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
@@ -91,19 +93,44 @@ public class MyService extends Service {
                 //Checks for currency symbols
                 if(Character.getType(item) == Character.CURRENCY_SYMBOL){
                     Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
+                    isCurrency = true;
                 }
                 //TODO: Fix this, redundant looping
                 else if(clippedString.toUpperCase().contains(" BTC ")){
-
+                    isCurrency = true;
                 }
-                else{
+                else if (!isCurrency){
                     // Checks for currency codes
                     for(int i = 0; i < c_codes.size(); i++){
-                        if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " "))){
+                        if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ") || clippedString.toUpperCase().contains(" " + c_codes.get(i)))){
                             //gets 3 Character currency code and gets corresponding symbol
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
+                            isCurrency = true;
                         }
                     }
+                }
+                //Checking for phone number
+                if (!isCurrency){
+                  //First check for potential international country code
+                  boolean international = false;
+                  for (int i = 0; i < clippedString.length(); i++) {
+                    if (clippedString.charAt(i) == 43) { // plus sign
+                      international = true;
+                    }
+                  }
+                  if (international) {
+
+                    //TODO: Identify potential international area code, if int't code is +1, isInternational = false and break.
+
+                  }
+                  if (!international) {
+                    //Check that the clipped string contains 10 digits of some sort (US and Canadian numbers)
+                    String phoneString = clippedString.replaceAll("[^0-9]", "");
+                    if (phoneString.length() == 10) {
+                      Log.e("Phone number detected", phoneString);
+                      //TODO: Call/add to contacts here
+                    }
+                  }
                 }
             }
             if (cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {

@@ -113,23 +113,11 @@ public class MyService extends Service {
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
 
-            //Detect if the clipped string has a currency symbol
+            //Detect if the clipped string has a currency code or symbol
             for (char item : clippedString.toCharArray()){
-                //Checks for currency symbols
-                if(Character.getType(item) == Character.CURRENCY_SYMBOL){
-                    Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
-                    currencySymbol = String.valueOf(item);
-                    //TODO: Andrew - add currencies
-                    if(currencySymbol.equals("$")){
-                        currencyCode = "USD";
-                    }
-                    currencySymbolDetected = true;
-                    currencyDetected = true;
-                }
-                //TODO: Fix this, redundant looping
-                else{
-                    // Checks for currency codes
-                    for(int i = 0; i < c_codes.size(); i++){
+                //Checks for currency codes first
+                if (!currencyDetected) {
+                    for (int i = 0; i < c_codes.size(); i++) {
                         if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ")) || (clippedString.toUpperCase().contains(" " + c_codes.get(i))) || (clippedString.toUpperCase().contains(c_codes.get(i) + " "))){
                             //gets 3 Character currency code and gets corresponding symbol
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
@@ -139,6 +127,45 @@ public class MyService extends Service {
                             currencyCodeTwo = Currency.getInstance((c_codes.get(i))).getSymbol();
                             currencyCode = (c_codes.get(i));
                         }
+                    }
+                }
+                if(Character.getType(item) == Character.CURRENCY_SYMBOL && !currencyDetected){
+                    Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
+                    currencySymbol = String.valueOf(item);
+                    currencySymbolDetected = true;
+                    currencyDetected = true;
+                    switch (currencySymbol) {
+                        case "$":
+                            currencyCode = "USD";
+                            break;
+                        case "€":
+                            currencyCode = "EUR";
+                            break;
+                        case "¥":
+                            currencyCode = "JPY"; //rip chinese yuan
+                            break;
+                        case "£":
+                            currencyCode = "GBP";
+                            break;
+                        case "﷼":
+                            currencyCode = "IRR";
+                            break;
+                        case "₪":
+                            currencyCode = "ILS";
+                            break;
+                        case "₫":
+                            currencyCode = "VND";
+                            break;
+                        case "\u20BD":
+                            currencyCode = "RUB";
+                            break;
+                        case "₩":
+                            currencyCode = "KRW";
+                            break;
+                        default:
+                            currencySymbolDetected = false; //symbol was found, but it's ambiguous/more than 1 possibility
+                            currencyDetected = false;
+                            break;
                     }
                 }
                 //Checks and (sort of) validates email

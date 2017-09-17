@@ -273,9 +273,17 @@ public class ChatHeadService extends Service {
         } else if(data_type.equals("CURRENCY")){
             //primaryTV.setText("CAD" + " " + converted_value);
             parseJSON(currency_code,(original_value));
-            String str = String.valueOf(primaryTV.getText());
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String str = String.valueOf(loadSavedConversion());
             str = str.replaceAll("[^\\d.]", "");
             converted_value = str;
+            Log.e("CHS: CONV", converted_value);
             secondaryTV.setText(currency_code+" "+ original_value);
             firstTabIV.setBackgroundResource(R.drawable.ic_attach_money_white_24dp);
             secondTabIV.setBackgroundResource(R.drawable.ic_euro_symbol_white_24dp);
@@ -305,12 +313,12 @@ public class ChatHeadService extends Service {
                 public void onClick(View view) {
                     //to ERU
                     //TODO: FIX THIS USD
-                    String str = String.valueOf(finalConverted_value1);
-                    str = str.replaceAll("[^\\d.]", "");
+                    String str1 = String.valueOf(primaryTV.getText());
+                    str1 = str1.replaceAll("[^\\d.]", "");
+                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
+                    String conRes = String.valueOf(Double.valueOf(str1) * 0.69);
 
-                    String conRes = String.valueOf(Double.valueOf(str) * 0.69);
-                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
-                    primaryTV.setText("EUR " + String.valueOf(roundOff));
+                    primaryTV.setText("EUR " + String.valueOf(roundThis(Double.valueOf(conRes))));
                 }
             });
 
@@ -319,12 +327,25 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //YEN
-                    String str = String.valueOf(finalConverted_value2);
-                    str = str.replaceAll("[^\\d.]", "");
+                    String str1 = String.valueOf(primaryTV.getText());
+                    str1 = str1.replaceAll("[^\\d.]", "");
+                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
+                    String conRes = String.valueOf(Double.valueOf(str1) * 90.89);
 
-                    String conRes = String.valueOf(Double.valueOf(str) * 90.89);
-                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
-                    primaryTV.setText("YEN " + String.valueOf(roundOff));
+                    primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
+                }
+            });
+
+            currencyYen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //YEN
+                    String str1 = String.valueOf(primaryTV.getText());
+                    str1 = str1.replaceAll("[^\\d.]", "");
+                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
+                    String conRes = String.valueOf(Double.valueOf(str1) * 90.89);
+
+                    primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
                 }
             });
         }
@@ -428,9 +449,9 @@ public class ChatHeadService extends Service {
                                     temp = String.valueOf(conversion);
                                     Toast.makeText(getApplicationContext(), "ValueCH: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
-                                    saveCoversion(String.valueOf(conversion));
+                                    saveCoversion(String.valueOf(conversion * 1.22));
 
-                                    primaryTV.setText("CAD " + String.valueOf(roundThis(conversion)));
+                                    primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
                                     Log.e("TEST_VAL: ", convertResult[0]);
                                     parseConvertResult = convertResult[0];
                                     break;

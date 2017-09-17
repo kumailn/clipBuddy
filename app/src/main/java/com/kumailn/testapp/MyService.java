@@ -215,16 +215,10 @@ public class MyService extends Service {
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
                 if(currencySymbolDetected){
                     String resultConversion = parseJSON(currencyCode, currencyValue);
-                    double roundOff = 0;
-                    try{
-                        roundOff = Math.round(Double.valueOf(resultConversion) * 100.0) / 100.0;
-                    }catch (Exception e){}
                     Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
-                    Log.e("TEST111: ", resultConversion);
                     ii.putExtra("TYPE", "CURRENCY");
                     ii.putExtra("ORIGINAL", currencyValue);
                     //ii.putExtra("CONVERTED", String.valueOf(roundOff));
-                    ii.putExtra("CONVERTED", "NONE");
                     ii.putExtra("CODE", currencyCode);
 
                     if (num_clips > 0){

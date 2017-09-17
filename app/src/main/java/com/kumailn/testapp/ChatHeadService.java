@@ -3,6 +3,7 @@ package com.kumailn.testapp;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.IBinder;
@@ -34,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.concurrent.TimeUnit;
+
 import static android.R.attr.data;
 import static android.R.attr.fingerprintAuthDrawable;
 import static android.R.attr.textColorTertiary;
@@ -47,6 +50,7 @@ public class ChatHeadService extends Service {
     String[] convertResult = new String[1];
     public static String currencyCodeTwo;
     public static String parseConvertResult;
+    public static String defaultMethod = "";
     TextView primaryTV;
     TextView secondaryTV;
     ImageView firstTabIV;
@@ -57,6 +61,7 @@ public class ChatHeadService extends Service {
     LinearLayout buttonLL;
     RelativeLayout closeButton;
     TextView currencyYen;
+    String temp = "";
 
 
     public ChatHeadService() {
@@ -193,10 +198,20 @@ public class ChatHeadService extends Service {
         //Types = EMAIL, CURRENCY, PHONE
         String data_type = intent.getStringExtra("TYPE");
         String original_value = intent.getStringExtra("ORIGINAL");
+/*
         String converted_value = intent.getStringExtra("CONVERTED");
+*/
         String currency_code = intent.getStringExtra("CODE");
         String email_address = intent.getStringExtra("EMAILADDRESS");
         String phone_number = intent.getStringExtra("PHONENUMBER");
+        String converted_value = loadSavedConversion();
+
+      /*  try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
 
         if (data_type.equals("PHONE")){
             primaryTV.setText(phone_number);
@@ -256,7 +271,11 @@ public class ChatHeadService extends Service {
             });
 
         } else if(data_type.equals("CURRENCY")){
-            primaryTV.setText("CAD" + " " + converted_value);
+            //primaryTV.setText("CAD" + " " + converted_value);
+            parseJSON(currency_code,(original_value));
+            String str = String.valueOf(primaryTV.getText());
+            str = str.replaceAll("[^\\d.]", "");
+            converted_value = str;
             secondaryTV.setText(currency_code+" "+ original_value);
             firstTabIV.setBackgroundResource(R.drawable.ic_attach_money_white_24dp);
             secondTabIV.setBackgroundResource(R.drawable.ic_euro_symbol_white_24dp);
@@ -265,12 +284,13 @@ public class ChatHeadService extends Service {
             thirdTabIV.setVisibility(View.GONE);
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
 
+            String finalConverted_value = converted_value;
             firstTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //to USD
                     //TODO: FIX THIS USD
-                    String str = String.valueOf(converted_value);
+                    String str = String.valueOf(finalConverted_value);
                     str = str.replaceAll("[^\\d.]", "");
 
                     String conRes = String.valueOf(Double.valueOf(str) * 0.82);
@@ -279,12 +299,13 @@ public class ChatHeadService extends Service {
                 }
             });
 
+            String finalConverted_value1 = converted_value;
             secondTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //to ERU
                     //TODO: FIX THIS USD
-                    String str = String.valueOf(converted_value);
+                    String str = String.valueOf(finalConverted_value1);
                     str = str.replaceAll("[^\\d.]", "");
 
                     String conRes = String.valueOf(Double.valueOf(str) * 0.69);
@@ -293,11 +314,12 @@ public class ChatHeadService extends Service {
                 }
             });
 
+            String finalConverted_value2 = converted_value;
             thirdTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //YEN
-                    String str = String.valueOf(converted_value);
+                    String str = String.valueOf(finalConverted_value2);
                     str = str.replaceAll("[^\\d.]", "");
 
                     String conRes = String.valueOf(Double.valueOf(str) * 90.89);
@@ -403,8 +425,12 @@ public class ChatHeadService extends Service {
                                 if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
-                                    Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
+                                    temp = String.valueOf(conversion);
+                                    Toast.makeText(getApplicationContext(), "ValueCH: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
+                                    saveCoversion(String.valueOf(conversion));
+
+                                    primaryTV.setText("CAD " + String.valueOf(roundThis(conversion)));
                                     Log.e("TEST_VAL: ", convertResult[0]);
                                     parseConvertResult = convertResult[0];
                                     break;
@@ -427,7 +453,25 @@ public class ChatHeadService extends Service {
                 }
         );
         requestQueue.add(jsonObjectRequest);
-        return parseConvertResult;
+        //Log.e("CHS: ", parseConvertResult);
+        return "";
+    }
+
+    public String loadSavedConversion(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        String myMethod = sharedPreferences.getString("CON", defaultMethod);
+        return (myMethod);
+    }
+
+    public void saveCoversion(String newNum){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("CON", newNum);
+        editor.commit();
+    }
+
+    public double roundThis(double num){
+        return Math.round(num * 100.0) / 100.0;
     }
 
 }

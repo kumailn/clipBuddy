@@ -223,7 +223,8 @@ public class MyService extends Service {
                     Log.e("TEST111: ", resultConversion);
                     ii.putExtra("TYPE", "CURRENCY");
                     ii.putExtra("ORIGINAL", currencyValue);
-                    ii.putExtra("CONVERTED", String.valueOf(roundOff));
+                    //ii.putExtra("CONVERTED", String.valueOf(roundOff));
+                    ii.putExtra("CONVERTED", "NONE");
                     ii.putExtra("CODE", currencyCode);
 
                     if (num_clips > 0){
@@ -244,7 +245,8 @@ public class MyService extends Service {
                     Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
                     ii.putExtra("TYPE", "CURRENCY");
                     ii.putExtra("ORIGINAL", currencyValue);
-                    ii.putExtra("CONVERTED", String.valueOf(roundOff));
+                    //ii.putExtra("CONVERTED", String.valueOf(roundOff));
+                    ii.putExtra("CONVERTED", "NONE");
                     ii.putExtra("CODE", cc);
 
                     if (num_clips > 0){

@@ -1,5 +1,7 @@
 package com.kumailn.testapp;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ClipboardManager clipService = (ClipboardManager)getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("", "");
+        clipService.setPrimaryClip(clipData);
+
+
         Button myButton = (Button)findViewById(R.id.button);
         Button b2 = (Button)findViewById(R.id.button2);
         TextView mt = (TextView)findViewById(R.id.textView);
@@ -181,6 +188,36 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        TextView mt = (TextView)findViewById(R.id.textView);
+        ImageView sm = (ImageView)findViewById(R.id.smileyView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            //If the draw over permission is not available open the settings screen
+            //to grant the permission.
+
+            sm.setImageResource(R.drawable.ic_sad);
+            mt.setVisibility(View.VISIBLE);
+            mt.setText("Sorry, one or more of the permissions haven't been allowed. Please restart the app and allow all permissions");
+            AlphaAnimation fadeIn = new AlphaAnimation(0.0f , 1.0f ) ;
+            fadeIn.setInterpolator(new AccelerateInterpolator()); //and this
+            fadeIn.setStartOffset(150);
+            fadeIn.setDuration(700);
+            AnimationSet animation = new AnimationSet(false); //change to false
+            animation.addAnimation(fadeIn);
+            mt.setAnimation(animation);
+
+            sm.setVisibility(View.VISIBLE);
+            AlphaAnimation fadeIn2 = new AlphaAnimation(0.0f , 1.0f ) ;
+            fadeIn2.setInterpolator(new AccelerateInterpolator()); //and this
+            fadeIn2.setStartOffset(250);
+            fadeIn2.setDuration(900);
+            AnimationSet animation2 = new AnimationSet(false); //change to false
+            animation2.addAnimation(fadeIn2);
+            sm.setAnimation(animation2);
+
+         /*   Intent i = new Intent(getApplicationContext(), MyService.class);
+            Log.e("MyService: ", "Started ");
+            startService(i);*/
+        }
         /*TextView mt = (TextView)findViewById(R.id.textView);
         ImageView sm = (ImageView)findViewById(R.id.smileyView);
                 mt.setVisibility(View.VISIBLE);
@@ -206,6 +243,28 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("MyService: ", "Started ");
                 startService(i);
 */
-        }
+
+        else{
+        sm.setImageResource(R.drawable.ic_smiley);
+        mt.setVisibility(View.VISIBLE);
+        mt.setText("Great, you're set. You can now close the app.");
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f , 1.0f ) ;
+        fadeIn.setInterpolator(new AccelerateInterpolator()); //and this
+        fadeIn.setStartOffset(150);
+        fadeIn.setDuration(700);
+        AnimationSet animation = new AnimationSet(false); //change to false
+        animation.addAnimation(fadeIn);
+        mt.setAnimation(animation);
+
+        sm.setVisibility(View.VISIBLE);
+        AlphaAnimation fadeIn2 = new AlphaAnimation(0.0f , 1.0f ) ;
+        fadeIn2.setInterpolator(new AccelerateInterpolator()); //and this
+        fadeIn2.setStartOffset(250);
+        fadeIn2.setDuration(900);
+        AnimationSet animation2 = new AnimationSet(false); //change to false
+        animation2.addAnimation(fadeIn2);
+        sm.setAnimation(animation2);
+
     }
+    }}
 

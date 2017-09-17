@@ -366,7 +366,7 @@ public class ChatHeadService extends Service {
                     setUSDData(cadToUSD);
                     chart.getLegend().setEnabled(false);
 
-                    chart.animateXY(2000, 2000);
+                    chart.animateXY(500, 500);
                     chart.invalidate();
                 }
             });
@@ -408,7 +408,7 @@ public class ChatHeadService extends Service {
                     setUSDData(cadToEUR);
                     chart.getLegend().setEnabled(false);
 
-                    chart.animateXY(2000, 2000);
+                    chart.animateXY(500, 500);
                     chart.invalidate();
                 }
             });
@@ -463,7 +463,7 @@ public class ChatHeadService extends Service {
                     setUSDData(cadToYEN);
                     chart.getLegend().setEnabled(false);
 
-                    chart.animateXY(2000, 2000);
+                    chart.animateXY(500, 500);
                     chart.invalidate();
                 }
             });

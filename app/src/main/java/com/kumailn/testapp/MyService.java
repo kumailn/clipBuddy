@@ -36,6 +36,7 @@ public class MyService extends Service {
     public static boolean currencyDetected;
     public static boolean emailDetected;
     public static boolean phoneDetected;
+    public static String currencyCodeTwo;
 
     private XecdApiService apiService;
 
@@ -116,6 +117,10 @@ public class MyService extends Service {
                 if(Character.getType(item) == Character.CURRENCY_SYMBOL){
                     Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
                     currencySymbol = String.valueOf(item);
+                    //TODO: Andrew - add currencies
+                    if(currencySymbol.equals("$")){
+                        currencyCode = "USD";
+                    }
                     currencySymbolDetected = true;
                     currencyDetected = true;
                 }
@@ -128,9 +133,8 @@ public class MyService extends Service {
                             Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
                             currencyCodeDetected = true;
                             currencyDetected = true;
-/*
-                            currencyCode = Currency.getInstance((c_codes.get(i))).getSymbol();
-*/
+
+                            currencyCodeTwo = Currency.getInstance((c_codes.get(i))).getSymbol();
                             currencyCode = (c_codes.get(i));
                         }
                     }
@@ -176,6 +180,15 @@ public class MyService extends Service {
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
                 if(currencySymbolDetected){
                     Log.e("(S)VALUE: ", currencyValue);
+                    String resultConversion = parseJSON(cc, currencyValue);
+                    Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                    ii.putExtra("TYPE", "CURRENCY_SYM");
+                    ii.putExtra("ORIGINAL", currencyValue);
+                    ii.putExtra("CONVERTED", resultConversion);
+                    ii.putExtra("CODE", cc);
+                    if (num_clips > 0){
+                        startService(ii);
+                    }
                 }
                 else{
                     // If code is available

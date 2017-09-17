@@ -20,7 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import static android.R.attr.data;
+import static android.R.attr.fingerprintAuthDrawable;
+import static android.R.attr.textColorTertiary;
 import static android.R.attr.width;
 import static com.kumailn.testapp.R.attr.height;
 
@@ -28,6 +32,8 @@ public class ChatHeadService extends Service {
     private WindowManager mWindowManager;
     private View mChatHeadView;
     private boolean isActivited = false;
+    TextView primaryTV;
+    TextView secondaryTV;
 
 
     public ChatHeadService() {
@@ -59,8 +65,8 @@ public class ChatHeadService extends Service {
         mWindowManager.addView(mChatHeadView, params);
 
         RelativeLayout relativeLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.container_rl);
-        TextView primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
-        TextView secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
+        primaryTV = (TextView) mChatHeadView.findViewById(R.id.primary_tv);
+        secondaryTV = (TextView) mChatHeadView.findViewById(R.id.secondary_tv);
         LinearLayout buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
         RelativeLayout closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
         final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
@@ -161,6 +167,10 @@ public class ChatHeadService extends Service {
         else if(data_type.equals("EMAIL")){
             passEmailIntent(email_address);
         }
+        else if(data_type.equals("CURRENCY")){
+            primaryTV.setText(converted_value);
+        }
+
 
 
         return START_NOT_STICKY;

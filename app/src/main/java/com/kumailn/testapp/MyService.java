@@ -208,7 +208,16 @@ public class MyService extends Service {
                 String currencyValue = clippedString.replaceAll(" ", "");
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
                 if(currencySymbolDetected){
-                    Log.e("(S)VALUE: ", currencyValue);
+                    String resultConversion = parseJSON(currencyCode, currencyValue);
+                    Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                    ii.putExtra("TYPE", "CURRENCY");
+                    ii.putExtra("ORIGINAL", currencyValue);
+                    ii.putExtra("CONVERTED", resultConversion);
+                    ii.putExtra("CODE", currencyCode);
+
+                    if (num_clips > 0){
+                        startService(ii);
+                    }
 
                 }
                 else{
@@ -242,6 +251,7 @@ public class MyService extends Service {
                 ii.putExtra("EMAILADDRESS", email);
                 if (num_clips > 0){
                     startService(ii);
+                    stopService(new Intent(this, MyService.class));
                 }
             }
             if (phoneDetected) {
@@ -295,13 +305,13 @@ public class MyService extends Service {
                             for (int i = 0; i < 400; i++){
                                 String abc = response.getJSONArray("to").getJSONObject(i).getString("mid");
                                 convertResult[0] = abc;
-                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals("CAD")){
+                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
                                     Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
                                     Log.e("TEST_VAL: ", convertResult[0]);
-                                    parseConvertResult = String.valueOf(conversion);
+                                    parseConvertResult = convertResult[0];
                                     break;
                                 }
                             }

@@ -108,6 +108,7 @@ public class MyService extends Service {
             currencyDetected = false;
             emailDetected = false;
             phoneDetected = false;
+            String[] code_array = {"$", "€", "¥", "£"};
             String currencySymbol = "";
             String currencyCode = "";
             String email = "";
@@ -120,7 +121,52 @@ public class MyService extends Service {
                 return;
             };
             //Detect if the clipped string has a currency code or symbol
-            for (char item : clippedString.toCharArray()){
+            for (char item: clippedString.toCharArray()) {
+                for (String code : code_array) {
+                    if (String.valueOf(item).equals(code)) {
+                        Log.e("Smbo ldetected", code);
+                        currencySymbol = String.valueOf(item);
+                        currencySymbolDetected = true;
+                        currencyDetected = true;
+                        switch (currencySymbol) {
+                            case "$":
+                                currencyCode = "USD";
+                                break;
+                            case "€":
+                                currencyCode = "EUR";
+                                break;
+                            case "¥":
+                                currencyCode = "JPY"; //rip chinese yuan
+                                break;
+                            case "£":
+                                currencyCode = "GBP";
+                                break;
+                            case "﷼":
+                                currencyCode = "IRR";
+                                break;
+                            case "₪":
+                                currencyCode = "ILS";
+                                break;
+                            case "₫":
+                                currencyCode = "VND";
+                                break;
+                            case "\u20BD":
+                                currencyCode = "RUB";
+                                break;
+                            case "₩":
+                                currencyCode = "KRW";
+                                break;
+                            default:
+                                currencySymbolDetected = false; //symbol was found, but it's ambiguous/more than 1 possibility
+                                currencyDetected = false;
+                                break;
+                        }
+                        break;
+                    }
+
+                }
+            }
+            for (char num : clippedString.toCharArray()){
                 //Checks for currency codes first
                 if (!currencyDetected) {
                     for (int i = 0; i < c_codes.size(); i++) {
@@ -135,45 +181,8 @@ public class MyService extends Service {
                         }
                     }
                 }
-                if((Character.getType(item) == Character.CURRENCY_SYMBOL) && (!currencyDetected)){
-                    Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
-                    currencySymbol = String.valueOf(item);
-                    currencySymbolDetected = true;
-                    currencyDetected = true;
-                    switch (currencySymbol) {
-                        case "$":
-                            currencyCode = "USD";
-                            break;
-                        case "€":
-                            currencyCode = "EUR";
-                            break;
-                        case "¥":
-                            currencyCode = "JPY"; //rip chinese yuan
-                            break;
-                        case "£":
-                            currencyCode = "GBP";
-                            break;
-                        case "﷼":
-                            currencyCode = "IRR";
-                            break;
-                        case "₪":
-                            currencyCode = "ILS";
-                            break;
-                        case "₫":
-                            currencyCode = "VND";
-                            break;
-                        case "\u20BD":
-                            currencyCode = "RUB";
-                            break;
-                        case "₩":
-                            currencyCode = "KRW";
-                            break;
-                        default:
-                            currencySymbolDetected = false; //symbol was found, but it's ambiguous/more than 1 possibility
-                            currencyDetected = false;
-                            break;
-                    }
-                }
+
+
                 //Checks and (sort of) validates email
                 if (clippedString.contains("@")) {
                     String[] parts = clippedString.split(" ");

@@ -44,6 +44,7 @@ public class ChatHeadService extends Service {
     RelativeLayout relativeLayout;
     LinearLayout buttonLL;
     RelativeLayout closeButton;
+    TextView currencyYen;
 
 
     public ChatHeadService() {
@@ -82,6 +83,7 @@ public class ChatHeadService extends Service {
         secondTabIV = (ImageView) mChatHeadView.findViewById(R.id.tab2);
         thirdTabIV = (ImageView) mChatHeadView.findViewById(R.id.tab3);
         relativetabLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.tab3_rl);
+        currencyYen = (TextView) mChatHeadView.findViewById(R.id.tab3_tv);
 
         buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
         closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
@@ -186,6 +188,8 @@ public class ChatHeadService extends Service {
             secondTabIV.setBackgroundResource(R.drawable.ic_message_white_24dp);
             thirdTabIV.setBackgroundResource(R.drawable.ic_person_white_24dp);
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
+            currencyYen.setVisibility(View.GONE);
+            thirdTabIV.setVisibility(View.VISIBLE);
 
             firstTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -214,6 +218,8 @@ public class ChatHeadService extends Service {
             firstTabIV.setBackgroundResource(R.drawable.ic_email_white_24dp);
             secondTabIV.setBackgroundResource(R.drawable.ic_person_white_24dp);
             thirdTabIV.setBackgroundResource(R.drawable.ic_phone_white_24dp);
+            currencyYen.setVisibility(View.GONE);
+            thirdTabIV.setVisibility(View.VISIBLE);
             thirdTabIV.setEnabled(false);
             relativetabLayout.setBackgroundResource(R.drawable.buttons_tabs_disabled);
 
@@ -237,7 +243,9 @@ public class ChatHeadService extends Service {
             secondaryTV.setText(currency_code+" "+ original_value);
             firstTabIV.setBackgroundResource(R.drawable.ic_attach_money_white_24dp);
             secondTabIV.setBackgroundResource(R.drawable.ic_euro_symbol_white_24dp);
-            thirdTabIV.setBackgroundResource(R.drawable.ic_euro_symbol_white_24dp);
+            //thirdTabIV.setBackgroundResource(R.drawable.ic_euro_symbol_white_24dp);
+            currencyYen.setVisibility(View.VISIBLE);
+            thirdTabIV.setVisibility(View.GONE);
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
 
             firstTabIV.setOnClickListener(new View.OnClickListener() {
@@ -279,8 +287,9 @@ public class ChatHeadService extends Service {
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         intent.putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
         if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
+            this.startActivity(intent);
         }
         minimizeChatHead();
     }
@@ -289,8 +298,9 @@ public class ChatHeadService extends Service {
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         intent.putExtra(ContactsContract.Intents.Insert.EMAIL, email);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
         if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
+            getApplicationContext().startActivity(intent);
         }
         minimizeChatHead();
     }
@@ -298,14 +308,16 @@ public class ChatHeadService extends Service {
     public void passMessagesIntent(String phonenumber){
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"+phonenumber));
-        startActivity(sendIntent);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        getApplicationContext().startActivity(sendIntent);
         minimizeChatHead();
     }
 
     public void passPhoneIntent(String phonenumber){
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:" + phonenumber));
-        getBaseContext().startActivity(intent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        getApplicationContext().startActivity(intent);
         minimizeChatHead();
     }
 

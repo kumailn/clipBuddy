@@ -3,6 +3,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -28,6 +29,7 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     final String versionName = BuildConfig.VERSION_NAME;
+    public static int defaultMethod = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         Button b2 = (Button)findViewById(R.id.button2);
         TextView mt = (TextView)findViewById(R.id.textView);
         ImageView sm = (ImageView)findViewById(R.id.smileyView);
+
+        saveNumericInstance(loadNumericInstance() + 1);
 
         //Non default toolbar creation
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -160,4 +164,48 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-}
+
+    public int loadNumericInstance(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        int myMethod = sharedPreferences.getInt("NUM", defaultMethod);
+        return (myMethod);
+    }
+
+    public void saveNumericInstance(int newNum){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("NUM", newNum);
+        editor.commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /*TextView mt = (TextView)findViewById(R.id.textView);
+        ImageView sm = (ImageView)findViewById(R.id.smileyView);
+                mt.setVisibility(View.VISIBLE);
+                mt.setText("Great, you're set. You can now close the app.");
+                AlphaAnimation fadeIn = new AlphaAnimation(0.0f , 1.0f ) ;
+                fadeIn.setInterpolator(new AccelerateInterpolator()); //and this
+                fadeIn.setStartOffset(150);
+                fadeIn.setDuration(700);
+                AnimationSet animation = new AnimationSet(false); //change to false
+                animation.addAnimation(fadeIn);
+                mt.setAnimation(animation);
+
+                sm.setVisibility(View.VISIBLE);
+                AlphaAnimation fadeIn2 = new AlphaAnimation(0.0f , 1.0f ) ;
+                fadeIn2.setInterpolator(new AccelerateInterpolator()); //and this
+                fadeIn2.setStartOffset(250);
+                fadeIn2.setDuration(900);
+                AnimationSet animation2 = new AnimationSet(false); //change to false
+                animation2.addAnimation(fadeIn2);
+                sm.setAnimation(animation2);
+
+                Intent i = new Intent(getApplicationContext(), MyService.class);
+                Log.e("MyService: ", "Started ");
+                startService(i);
+*/
+        }
+    }
+

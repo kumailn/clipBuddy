@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.support.annotation.IntDef;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,6 +24,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import static android.R.attr.data;
@@ -35,6 +44,9 @@ public class ChatHeadService extends Service {
     private WindowManager mWindowManager;
     private View mChatHeadView;
     private boolean isActivited = false;
+    String[] convertResult = new String[1];
+    public static String currencyCodeTwo;
+    public static String parseConvertResult;
     TextView primaryTV;
     TextView secondaryTV;
     ImageView firstTabIV;
@@ -109,7 +121,10 @@ public class ChatHeadService extends Service {
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        stopSelf();
+
+                        //stopSelf();
+                        android.os.Process.killProcess(android.os.Process.myPid());
+
                     }
 
                     @Override
@@ -123,6 +138,8 @@ public class ChatHeadService extends Service {
                 //stopSelf();
             }
         });
+
+
 
         chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
 
@@ -243,22 +260,41 @@ public class ChatHeadService extends Service {
             firstTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //to USD
+                    //TODO: FIX THIS USD
+                    String str = String.valueOf(converted_value);
+                    str = str.replaceAll("[^\\d.]", "");
 
-
+                    String conRes = String.valueOf(Double.valueOf(str) * 0.82);
+                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
+                    primaryTV.setText("USD " + String.valueOf(roundOff));
                 }
             });
 
             secondTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //to ERU
+                    //TODO: FIX THIS USD
+                    String str = String.valueOf(converted_value);
+                    str = str.replaceAll("[^\\d.]", "");
 
+                    String conRes = String.valueOf(Double.valueOf(str) * 0.69);
+                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
+                    primaryTV.setText("EUR " + String.valueOf(roundOff));
                 }
             });
 
             thirdTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //YEN
+                    String str = String.valueOf(converted_value);
+                    str = str.replaceAll("[^\\d.]", "");
 
+                    String conRes = String.valueOf(Double.valueOf(str) * 90.89);
+                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
+                    primaryTV.setText("YEN " + String.valueOf(roundOff));
                 }
             });
         }
@@ -273,6 +309,7 @@ public class ChatHeadService extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (mChatHeadView != null) mWindowManager.removeView(mChatHeadView);
+            Log.e("CHATSERVICE", "DESTROYED");
     }
 
     public void passContactPhoneIntent(String phoneNumber){
@@ -331,6 +368,54 @@ public class ChatHeadService extends Service {
 
         isActivited = false;
 
+    }
+
+
+    com.android.volley.RequestQueue requestQueue;
+    public String parseJSON(String code, String number){
+        requestQueue = Volley.newRequestQueue(this);
+        String jsonURL = "https://api.myjson.com/bins/1gjfk5";
+        Log.e(jsonURL, "");
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        double conversion = 1;
+                        try {
+                            String aaa = response.getJSONArray("to").getJSONObject(0).getString("mid");
+
+                            //JSONArray jsonArray = response.getJSONArray("name");
+                            for (int i = 0; i < 400; i++){
+                                String abc = response.getJSONArray("to").getJSONObject(i).getString("mid");
+                                convertResult[0] = abc;
+                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
+                                    Log.e("VALUEFOUND: ", abc);
+                                    conversion = Double.parseDouble(number) / Double.parseDouble(abc);
+                                    Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
+                                    convertResult[0] = String.valueOf(conversion);
+                                    Log.e("TEST_VAL: ", convertResult[0]);
+                                    parseConvertResult = convertResult[0];
+                                    break;
+                                }
+                            }
+                            convertResult[0] = String.valueOf(conversion);
+                            //Toast.makeText(MainActivity.this, "JSON WORKS", Toast.LENGTH_SHORT).show();
+                            Log.e("JSONVOLLEY", aaa);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", "ERROR");
+                    }
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
+        return parseConvertResult;
     }
 
 }

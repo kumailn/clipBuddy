@@ -3,7 +3,9 @@ import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.audiofx.LoudnessEnhancer;
 import android.net.http.RequestQueue;
 import android.os.IBinder;
@@ -28,6 +30,8 @@ import java.util.Currency;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.kumailn.testapp.MainActivity.defaultMethod;
 
 public class MyService extends Service {
     public static int num_clips;
@@ -97,7 +101,7 @@ public class MyService extends Service {
         //test git
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (cb.hasPrimaryClip()) {
+        if ((cb.hasPrimaryClip())) {
             //Switch all values to false/empty on each copy
             currencyCodeDetected = false;
             currencySymbolDetected = false;
@@ -112,7 +116,9 @@ public class MyService extends Service {
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
-
+            if (!cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)){
+                return;
+            };
             //Detect if the clipped string has a currency code or symbol
             for (char item : clippedString.toCharArray()){
                 //Checks for currency codes first
@@ -129,7 +135,7 @@ public class MyService extends Service {
                         }
                     }
                 }
-                if(Character.getType(item) == Character.CURRENCY_SYMBOL && !currencyDetected){
+                if((Character.getType(item) == Character.CURRENCY_SYMBOL) && (!currencyDetected)){
                     Log.e("CURRENCY_DETECTED: ", String.valueOf(item));
                     currencySymbol = String.valueOf(item);
                     currencySymbolDetected = true;
@@ -209,10 +215,15 @@ public class MyService extends Service {
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
                 if(currencySymbolDetected){
                     String resultConversion = parseJSON(currencyCode, currencyValue);
+                    double roundOff = 0;
+                    try{
+                        roundOff = Math.round(Double.valueOf(resultConversion) * 100.0) / 100.0;
+                    }catch (Exception e){}
                     Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                    Log.e("TEST111: ", resultConversion);
                     ii.putExtra("TYPE", "CURRENCY");
                     ii.putExtra("ORIGINAL", currencyValue);
-                    ii.putExtra("CONVERTED", resultConversion);
+                    ii.putExtra("CONVERTED", String.valueOf(roundOff));
                     ii.putExtra("CODE", currencyCode);
 
                     if (num_clips > 0){
@@ -220,16 +231,20 @@ public class MyService extends Service {
                     }
 
                 }
-                else{
+                else if(currencyCodeDetected){
                     // If code is available
                     Log.e("(C)VALUE: ", currencyValue);
                     String cc = currencyCode.replaceAll(" ", "");
                     Log.e("CODEIS: ", cc);
-                    String resultConversion = parseJSON(cc, currencyValue);
+                    String resultConversion = parseJSON(currencyCode, currencyValue);
+                    double roundOff = 0;
+                    try{
+                        roundOff = Math.round(Double.valueOf(resultConversion) * 100.0) / 100.0;
+                    }catch (Exception e){}
                     Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
                     ii.putExtra("TYPE", "CURRENCY");
                     ii.putExtra("ORIGINAL", currencyValue);
-                    ii.putExtra("CONVERTED", resultConversion);
+                    ii.putExtra("CONVERTED", String.valueOf(roundOff));
                     ii.putExtra("CODE", cc);
 
                     if (num_clips > 0){
@@ -244,7 +259,7 @@ public class MyService extends Service {
                 }
 
             }
-            if(emailDetected) {
+            else if(emailDetected) {
                 Log.e("(E)VALUE: ", email);
                 Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
                 ii.putExtra("TYPE", "EMAIL");
@@ -254,7 +269,7 @@ public class MyService extends Service {
                     stopService(new Intent(this, MyService.class));
                 }
             }
-            if (phoneDetected) {
+            else if (phoneDetected) {
                 //phoneNum is the nicely formatted string to display on the screen for 10 digit numbers
                 //e.g. (123) 456-7890
                 //phoneSend is the string 1234567890 to send to android
@@ -288,6 +303,19 @@ public class MyService extends Service {
         Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
     }
 
+    public int loadNumericInstance(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        int myMethod = sharedPreferences.getInt("NUM", defaultMethod);
+        return (myMethod);
+    }
+
+    public void saveNumericInstance(int newNum){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("NUM", newNum);
+        editor.commit();
+    }
+
     com.android.volley.RequestQueue requestQueue;
     public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
@@ -308,6 +336,7 @@ public class MyService extends Service {
                                 if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
+                                    conversion = conversion * 1.22;
                                     Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
                                     Log.e("TEST_VAL: ", convertResult[0]);

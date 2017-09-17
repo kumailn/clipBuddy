@@ -169,6 +169,7 @@ public class ChatHeadService extends Service {
         }
         else if(data_type.equals("CURRENCY")){
             primaryTV.setText(converted_value);
+            secondaryTV.setText(original_value);
         }
 
 

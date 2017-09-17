@@ -36,7 +36,9 @@ public class MyService extends Service {
     public static boolean currencyDetected;
     public static boolean emailDetected;
     public static boolean phoneDetected;
+    String[] convertResult = new String[1];
     public static String currencyCodeTwo;
+    public static String parseConvertResult;
 
     private XecdApiService apiService;
 
@@ -180,15 +182,7 @@ public class MyService extends Service {
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
                 if(currencySymbolDetected){
                     Log.e("(S)VALUE: ", currencyValue);
-                    String resultConversion = parseJSON(cc, currencyValue);
-                    Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
-                    ii.putExtra("TYPE", "CURRENCY_SYM");
-                    ii.putExtra("ORIGINAL", currencyValue);
-                    ii.putExtra("CONVERTED", resultConversion);
-                    ii.putExtra("CODE", cc);
-                    if (num_clips > 0){
-                        startService(ii);
-                    }
+
                 }
                 else{
                     // If code is available
@@ -261,7 +255,6 @@ public class MyService extends Service {
     public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "https://api.myjson.com/bins/1gjfk5";
-        final String[] convertResult = new String[1];
         Log.e(jsonURL, "");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
                 new Response.Listener<JSONObject>() {
@@ -275,13 +268,17 @@ public class MyService extends Service {
                             for (int i = 0; i < 400; i++){
                                 String abc = response.getJSONArray("to").getJSONObject(i).getString("mid");
                                 convertResult[0] = abc;
-                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals(code)){
+                                if(response.getJSONArray("to").getJSONObject(i).getString("quotecurrency").equals("CAD")){
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
                                     Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
+                                    convertResult[0] = String.valueOf(conversion);
+                                    Log.e("TEST_VAL: ", convertResult[0]);
+                                    parseConvertResult = String.valueOf(conversion);
                                     break;
                                 }
                             }
+                            convertResult[0] = String.valueOf(conversion);
                             //Toast.makeText(MainActivity.this, "JSON WORKS", Toast.LENGTH_SHORT).show();
                             Log.e("JSONVOLLEY", aaa);
                         } catch (JSONException e) {
@@ -297,10 +294,7 @@ public class MyService extends Service {
                     }
                 }
         );
-
-
-
         requestQueue.add(jsonObjectRequest);
-        return convertResult[0];
+        return parseConvertResult;
     }
 }

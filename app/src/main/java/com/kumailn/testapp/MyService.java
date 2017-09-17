@@ -116,10 +116,14 @@ public class MyService extends Service {
             String phoneSend = "";
             ClipData cd = cb.getPrimaryClip();
             String clippedString = cd.getItemAt(0).getText().toString();
+            clippedString = String.copyValueOf(clippedString.toCharArray());
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
             if (!cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)){
-                return;
-            };
+                //return;
+            }
+            else{
+                Log.e("This is just  text" , "");
+            }
             //Detect if the clipped string has a currency code or symbol
             for (char item: clippedString.toCharArray()) {
                 for (String code : code_array) {
@@ -301,7 +305,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
     }
 
     public int loadNumericInstance(){

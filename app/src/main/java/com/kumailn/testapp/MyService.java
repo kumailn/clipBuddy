@@ -166,57 +166,53 @@ public class MyService extends Service {
 
                 }
             }
-            for (char num : clippedString.toCharArray()){
                 //Checks for currency codes first
-                if (!currencyDetected) {
-                    for (int i = 0; i < c_codes.size(); i++) {
-                        if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ")) || (clippedString.toUpperCase().contains(" " + c_codes.get(i))) || (clippedString.toUpperCase().contains(c_codes.get(i) + " "))){
-                            //gets 3 Character currency code and gets corresponding symbol
-                            Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
-                            currencyCodeDetected = true;
-                            currencyDetected = true;
+            if (!currencyDetected) {
+                for (int i = 0; i < c_codes.size(); i++) {
+                    if((clippedString.toUpperCase().contains(" " + c_codes.get(i) + " ")) || (clippedString.toUpperCase().contains(" " + c_codes.get(i))) || (clippedString.toUpperCase().contains(c_codes.get(i) + " "))){
+                        //gets 3 Character currency code and gets corresponding symbol
+                        Log.e("CODE_DETECTED: ", (c_codes.get(i)) + " " + Currency.getInstance((c_codes.get(i))).getSymbol());
+                        currencyCodeDetected = true;
+                        currencyDetected = true;
 
-                            currencyCodeTwo = Currency.getInstance((c_codes.get(i))).getSymbol();
-                            currencyCode = (c_codes.get(i));
-                        }
+                        currencyCodeTwo = Currency.getInstance((c_codes.get(i))).getSymbol();
+                        currencyCode = (c_codes.get(i));
                     }
                 }
+            }
 
 
-                //Checks and (sort of) validates email
-                if (clippedString.contains("@")) {
-                    String[] parts = clippedString.split(" ");
-                    for (String word : parts) {
-                        if (word.contains("@")) {
-                            email = word;
-                            break;
-                        }
-                    }
-                    if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
-                        emailDetected = true;
-                    }
-                }
-                //Check for phone number
-                else {
-                //TODO: look at finding out where the call is going to? (international codes)
-                //Takes the first block of non-letters. and looks for a sub-block of 7<n<15 numbers
-                    phoneSend = clippedString.replaceAll(" ", "");
-                    int i = 0;
-                    while (i < phoneSend.length() && !Character.isDigit(phoneSend.charAt(i))) i++;
-                    int j = i;
-                    while (j < phoneSend.length() && !Character.isAlphabetic(phoneSend.charAt(j))) j++;
-                    phoneSend = phoneSend.substring(i, j).replaceAll("[^\\d]", "");
-                    if (phoneSend.length() > 7 && phoneSend.length() < 15) {
-                        phoneDetected = true;
-                    } else {
+            //Checks and (sort of) validates email
+            if (clippedString.contains("@")) {
+                String[] parts = clippedString.split(" ");
+                for (String word : parts) {
+                    if (word.contains("@")) {
+                        email = word;
                         break;
                     }
-                    if (phoneSend.length() == 10) {  //probably a local canadian/us number?
-                        phoneNum = String.format("(%s) %s-%s", phoneSend.substring(0,3), phoneSend.substring(3,6),
-                                phoneSend.substring(6,10));
-                    } else {
-                        phoneNum = phoneSend;
-                    }
+                }
+                if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
+                    emailDetected = true;
+                }
+            }
+            //Check for phone number
+            else {
+            //TODO: look at finding out where the call is going to? (international codes)
+            //Takes the first block of non-letters. and looks for a sub-block of 7<n<15 numbers
+                phoneSend = clippedString.replaceAll(" ", "");
+                int i = 0;
+                while (i < phoneSend.length() && !Character.isDigit(phoneSend.charAt(i))) i++;
+                int j = i;
+                while (j < phoneSend.length() && !Character.isAlphabetic(phoneSend.charAt(j))) j++;
+                phoneSend = phoneSend.substring(i, j).replaceAll("[^\\d]", "");
+                if (phoneSend.length() > 7 && phoneSend.length() < 15) {
+                    phoneDetected = true;
+                }
+                if (phoneSend.length() == 10) {  //probably a local canadian/us number?
+                    phoneNum = String.format("(%s) %s-%s", phoneSend.substring(0,3), phoneSend.substring(3,6),
+                            phoneSend.substring(6,10));
+                } else {
+                    phoneNum = phoneSend;
                 }
             }
             if (currencyDetected) {
@@ -305,7 +301,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Service shutting down", Toast.LENGTH_SHORT).show();
     }
 
     public int loadNumericInstance(){
@@ -342,7 +338,7 @@ public class MyService extends Service {
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
                                     conversion = conversion * 1.22;
-                                    Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "Value: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
                                     Log.e("TEST_VAL: ", convertResult[0]);
                                     parseConvertResult = convertResult[0];

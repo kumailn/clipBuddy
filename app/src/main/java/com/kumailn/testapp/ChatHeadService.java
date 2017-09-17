@@ -566,7 +566,7 @@ public class ChatHeadService extends Service {
                                     Log.e("VALUEFOUND: ", abc);
                                     conversion = Double.parseDouble(number) / Double.parseDouble(abc);
                                     temp = String.valueOf(conversion);
-                                    Toast.makeText(getApplicationContext(), "ValueCH: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "ValueCH: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
                                     saveCoversion(String.valueOf(conversion * 1.22));
 

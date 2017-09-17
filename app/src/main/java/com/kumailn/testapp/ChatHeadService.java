@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.IBinder;
@@ -30,11 +31,29 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.github.mikephil.charting.charts.LineChart;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IFillFormatter;
+import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
+
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static android.R.attr.data;
@@ -62,6 +81,14 @@ public class ChatHeadService extends Service {
     RelativeLayout closeButton;
     TextView currencyYen;
     String temp = "";
+
+    LineChart chart;
+    TextView xe_text;
+
+    double[] cadToUSD = {0.7960,0.7947,0.7946,0.7950,0.7958,0.7984,0.8019,0.8012,0.8012,0.7999,0.7980,0.7924,0.7978,0.8075,0.8066,0.8066,0.8059,0.8082,0.8188,0.8226,0.8241,0.8226,0.8223,0.8246,0.8221,0.8186,0.8196,0.8191,0.8199};
+    double[] cadToEUR = {0.6775,0.6758,0.6756,0.6724,0.6743,0.6761,0.6748,0.6720,0.6719,0.6679,0.6640,0.6660,0.6717,0.6801,0.6800,0.6800,0.6770,0.6788,0.6863,0.6858,0.6847,0.6835,0.6831,0.6891,0.6872,0.6888,0.6898,0.6858,0.6863};
+    double[] cadToYEN = {87.1053,86.7879,86.7784,86.5170,86.8616,87.2843,87.5665,87.6022,87.6928,87.3543,87.1234,87.3990,87.9150,88.9885,88.9347,88.9333,88.3738,87.8836,89.2258,89.1636,88.8860,88.7094,88.6609,89.9702,90.4703,90.5865,90.7420,90.7823,90.8905};
+
 
 
     public ChatHeadService() {
@@ -101,13 +128,15 @@ public class ChatHeadService extends Service {
         thirdTabIV = (ImageView) mChatHeadView.findViewById(R.id.tab3);
         relativetabLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.tab3_rl);
         currencyYen = (TextView) mChatHeadView.findViewById(R.id.tab3_tv);
-
+        xe_text = (TextView)mChatHeadView.findViewById(R.id.xe_tv);
         buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
         closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
         final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
 
         Animation floatingButton = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_open_button);
         chatHeadImage.setAnimation(floatingButton);
+
+        chart = (LineChart) mChatHeadView.findViewById(R.id.chart);
 
 
         closeButton.setOnClickListener(new View.OnClickListener() {
@@ -223,6 +252,7 @@ public class ChatHeadService extends Service {
             currencyYen.setVisibility(View.GONE);
             thirdTabIV.setVisibility(View.VISIBLE);
 
+
             firstTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -291,6 +321,12 @@ public class ChatHeadService extends Service {
             currencyYen.setVisibility(View.VISIBLE);
             thirdTabIV.setVisibility(View.GONE);
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
+            xe_text.setVisibility(View.VISIBLE);
+
+            RelativeLayout.LayoutParams rel_btn = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            relativeLayout.setLayoutParams(rel_btn);
+
 
             String finalConverted_value = converted_value;
             firstTabIV.setOnClickListener(new View.OnClickListener() {
@@ -304,6 +340,34 @@ public class ChatHeadService extends Service {
                     String conRes = String.valueOf(Double.valueOf(str) * 0.82);
                     double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
                     primaryTV.setText("USD " + String.valueOf(roundOff));
+
+                    chart.setVisibility(View.VISIBLE);
+                    chart.setViewPortOffsets(0, 0, 0, 0);
+                    chart.setBackgroundColor(Color.rgb(104, 241, 175));
+                    chart.getDescription().setEnabled(false);
+                    chart.setTouchEnabled(true);
+                    chart.setDragEnabled(true);
+                    chart.setScaleEnabled(true);
+                    chart.setPinchZoom(false);
+                    chart.setDrawGridBackground(false);
+                    chart.setMaxHighlightDistance(300);
+
+                    XAxis x = chart.getXAxis();
+                    x.setEnabled(false);
+
+                    YAxis y = chart.getAxisLeft();
+                    y.setLabelCount(6, false);
+                    y.setTextColor(Color.WHITE);
+                    y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+                    y.setDrawGridLines(false);
+                    y.setAxisLineColor(Color.WHITE);
+
+                    chart.getAxisRight().setEnabled(false);
+                    setUSDData(cadToUSD);
+                    chart.getLegend().setEnabled(false);
+
+                    chart.animateXY(2000, 2000);
+                    chart.invalidate();
                 }
             });
 
@@ -312,13 +376,40 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //to ERU
-                    //TODO: FIX THIS USD
-                    String str1 = String.valueOf(primaryTV.getText());
-                    str1 = str1.replaceAll("[^\\d.]", "");
-                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
-                    String conRes = String.valueOf(Double.valueOf(str1) * 0.69);
+                    String str = String.valueOf(finalConverted_value1);
+                    str = str.replaceAll("[^\\d.]", "");
 
+                    String conRes = String.valueOf(Double.valueOf(str) * 0.69);
                     primaryTV.setText("EUR " + String.valueOf(roundThis(Double.valueOf(conRes))));
+
+                    chart.setVisibility(View.VISIBLE);
+                    chart.setViewPortOffsets(0, 0, 0, 0);
+                    chart.setBackgroundColor(Color.rgb(104, 241, 175));
+                    chart.getDescription().setEnabled(false);
+                    chart.setTouchEnabled(true);
+                    chart.setDragEnabled(true);
+                    chart.setScaleEnabled(true);
+                    chart.setPinchZoom(false);
+                    chart.setDrawGridBackground(false);
+                    chart.setMaxHighlightDistance(300);
+
+                    XAxis x = chart.getXAxis();
+                    x.setEnabled(false);
+
+                    YAxis y = chart.getAxisLeft();
+                    y.setLabelCount(6, false);
+                    y.setTextColor(Color.WHITE);
+                    y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+                    y.setDrawGridLines(false);
+                    y.setAxisLineColor(Color.WHITE);
+
+                    chart.getAxisRight().setEnabled(false);
+                    //setData(45, 100);
+                    setUSDData(cadToEUR);
+                    chart.getLegend().setEnabled(false);
+
+                    chart.animateXY(2000, 2000);
+                    chart.invalidate();
                 }
             });
 
@@ -327,10 +418,10 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //YEN
-                    String str1 = String.valueOf(primaryTV.getText());
-                    str1 = str1.replaceAll("[^\\d.]", "");
-                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
-                    String conRes = String.valueOf(Double.valueOf(str1) * 90.89);
+                    String str = String.valueOf(finalConverted_value2);
+                    str = str.replaceAll("[^\\d.]", "");
+
+                    String conRes = String.valueOf(Double.valueOf(str) * 90.89);
 
                     primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
                 }
@@ -340,12 +431,40 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //YEN
-                    String str1 = String.valueOf(primaryTV.getText());
-                    str1 = str1.replaceAll("[^\\d.]", "");
-                    Toast.makeText(getApplicationContext(), "EURCh:" + str1, Toast.LENGTH_SHORT).show();
-                    String conRes = String.valueOf(Double.valueOf(str1) * 90.89);
+                    String str = String.valueOf(finalConverted_value1);
+                    str = str.replaceAll("[^\\d.]", "");
 
+                    String conRes = String.valueOf(Double.valueOf(str) * 90.89);
                     primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
+
+                    chart.setVisibility(View.VISIBLE);
+                    chart.setViewPortOffsets(0, 0, 0, 0);
+                    chart.setBackgroundColor(Color.rgb(104, 241, 175));
+                    chart.getDescription().setEnabled(false);
+                    chart.setTouchEnabled(true);
+                    chart.setDragEnabled(true);
+                    chart.setScaleEnabled(true);
+                    chart.setPinchZoom(false);
+                    chart.setDrawGridBackground(false);
+                    chart.setMaxHighlightDistance(300);
+
+                    XAxis x = chart.getXAxis();
+                    x.setEnabled(false);
+
+                    YAxis y = chart.getAxisLeft();
+                    y.setLabelCount(6, false);
+                    y.setTextColor(Color.WHITE);
+                    y.setPosition(YAxis.YAxisLabelPosition.INSIDE_CHART);
+                    y.setDrawGridLines(false);
+                    y.setAxisLineColor(Color.WHITE);
+
+                    chart.getAxisRight().setEnabled(false);
+                    //setData(45, 100);
+                    setUSDData(cadToYEN);
+                    chart.getLegend().setEnabled(false);
+
+                    chart.animateXY(2000, 2000);
+                    chart.invalidate();
                 }
             });
         }
@@ -493,6 +612,59 @@ public class ChatHeadService extends Service {
 
     public double roundThis(double num){
         return Math.round(num * 100.0) / 100.0;
+    }
+
+    private void setUSDData(double[] tempArray){
+
+        float temp = 1;
+        ArrayList<Entry> yVals = new ArrayList<Entry>();
+
+        for (int i=0; i<tempArray.length;i++){
+            float current = (float) tempArray[i];
+            temp = temp + 1;
+            yVals.add(new Entry(temp,current));
+        }
+
+
+        LineDataSet set1;
+
+        if (chart.getData() != null &&
+                chart.getData().getDataSetCount() > 0) {
+            set1 = (LineDataSet)chart.getData().getDataSetByIndex(0);
+            set1.setValues(yVals);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+        } else {
+            // create a dataset and give it a type
+            set1 = new LineDataSet(yVals, "DataSet 1");
+
+            set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            set1.setCubicIntensity(0.2f);
+            //set1.setDrawFilled(true);
+            set1.setDrawCircles(false);
+            set1.setLineWidth(1.8f);
+            set1.setCircleRadius(4f);
+            set1.setCircleColor(Color.WHITE);
+            set1.setHighLightColor(Color.rgb(244, 117, 117));
+            set1.setColor(Color.WHITE);
+            set1.setFillColor(Color.WHITE);
+            set1.setFillAlpha(100);
+            set1.setDrawHorizontalHighlightIndicator(false);
+            set1.setFillFormatter(new IFillFormatter() {
+                @Override
+                public float getFillLinePosition(ILineDataSet dataSet, LineDataProvider dataProvider) {
+                    return -10;
+                }
+            });
+
+            // create a data object with the datasets
+            LineData data = new LineData(set1);
+            data.setValueTextSize(9f);
+            data.setDrawValues(false);
+
+            chart.setData(data);
+        }
+
     }
 
 }

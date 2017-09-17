@@ -62,6 +62,7 @@
                 android:layout_gravity="center">
 
                 <RelativeLayout
+                    android:id="@+id/tab1_rl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_tabs"
@@ -69,6 +70,7 @@
                     android:layout_centerHorizontal="true">
 
                     <ImageView
+                        android:id="@+id/tab1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/ic_timeline_white_24dp"
@@ -87,6 +89,7 @@
                 android:layout_gravity="center">
 
                 <RelativeLayout
+                    android:id="@+id/tab2_rl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_tabs"
@@ -94,6 +97,7 @@
                     android:layout_centerHorizontal="true">
 
                     <ImageView
+                        android:id="@+id/tab2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/ic_timeline_white_24dp"
@@ -111,6 +115,7 @@
                 android:layout_gravity="center">
 
                 <RelativeLayout
+                    android:id="@+id/tab3_rl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_tabs"
@@ -118,6 +123,7 @@
                     android:layout_centerHorizontal="true">
 
                     <ImageView
+                        android:id="@+id/tab3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/ic_timeline_white_24dp"
@@ -156,13 +162,15 @@
         android:layout_height="wrap_content"
         android:background="@drawable/button_close"
         android:layout_marginBottom="56dp"
+        android:visibility="gone"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_close_white_24dp"
+            android:src="@drawable/ic_close_white_24dp"
+            android:tint="#f20b26"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>

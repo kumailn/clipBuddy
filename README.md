@@ -3,6 +3,7 @@ The clipboard evolved.
 ![clip](https://github.com/kumailn/clipBuddy/blob/master/app/src/main/res/drawable/feature_graphic.png)
 
 ### Information
+This project was a winner at HackTheNorth 2017
 https://devpost.com/software/clip-buddy
 
 ### Local installation

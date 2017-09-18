@@ -43,7 +43,6 @@ public class MyService extends Service {
     String[] convertResult = new String[1];
     public static String currencyCodeTwo;
     public static String parseConvertResult;
-
     private XecdApiService apiService;
 
     ArrayList<String> c_codes = new ArrayList<String>(
@@ -90,15 +89,12 @@ public class MyService extends Service {
 
         } catch (XecdApiException e) {
             e.printStackTrace();
-        }*/
-
+        }
+*/
 
         Toast.makeText(this, "Welcome to Clip Buddy!", Toast.LENGTH_SHORT).show();
-
         return START_STICKY;
-        //return super.onStartCommand(intent, flags, startId);
     }
-        //test git
     private void performClipboardCheck() {
         ClipboardManager cb = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         if ((cb.hasPrimaryClip())) {
@@ -118,12 +114,7 @@ public class MyService extends Service {
             String clippedString = cd.getItemAt(0).getText().toString();
             clippedString = String.copyValueOf(clippedString.toCharArray());
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
-            if (!cd.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)){
-                //return;
-            }
-            else{
-                Log.e("This is just  text" , "");
-            }
+
             //Detect if the clipped string has a currency code or symbol
             for (char item: clippedString.toCharArray()) {
                 for (String code : code_array) {

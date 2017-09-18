@@ -70,6 +70,13 @@ public class ChatHeadService extends Service {
     public static String currencyCodeTwo;
     public static String parseConvertResult;
     public static String defaultMethod = "";
+    public static boolean usdButtonClicked = false;
+    public static boolean eurButtonClicked = false;
+    public static boolean yenButtonClicked = false;
+    public static String usdValue = "";
+    public static String eurValue= "";
+    public static String yenValue = "";
+    public static String oldCurrencyValue = "";
     TextView primaryTV;
     TextView secondaryTV;
     ImageView firstTabIV;
@@ -96,13 +103,15 @@ public class ChatHeadService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
+        // Does nothing, not a bounded service
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //Inflate the chatHeadView
         mChatHeadView = LayoutInflater.from(this).inflate(R.layout.chat_head, null);
 
 
@@ -138,7 +147,7 @@ public class ChatHeadService extends Service {
 
         chart = (LineChart) mChatHeadView.findViewById(R.id.chart);
 
-
+        //OnClick listener for the close button
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,38 +166,28 @@ public class ChatHeadService extends Service {
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-
-                        //stopSelf();
+                        //Manually kill the process completely as soon as the animation ends
                         android.os.Process.killProcess(android.os.Process.myPid());
-
                     }
 
                     @Override
                     public void onAnimationRepeat(Animation animation) {
-
                     }
                 });
 
 
                 //close the service and remove the chat head from the window
-                //stopSelf();
             }
         });
 
 
 
         chatHeadImage.setOnTouchListener(new View.OnTouchListener() {
-
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-
-
                 switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-
                     case MotionEvent.ACTION_DOWN:
-
                         break;
-
                     case MotionEvent.ACTION_UP:
                         if (!isActivited){
                             primaryTV.setVisibility(View.VISIBLE);
@@ -196,7 +195,6 @@ public class ChatHeadService extends Service {
                             buttonLL.setVisibility(View.VISIBLE);
                             relativeLayout.setVisibility(View.VISIBLE);
                             closeButton.setVisibility(View.VISIBLE);
-
                             Animation expandIn = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation);
                             relativeLayout.startAnimation(expandIn);
                         } else {
@@ -208,12 +206,9 @@ public class ChatHeadService extends Service {
                             relativeLayout.setVisibility(View.GONE);
                             closeButton.setVisibility(View.GONE);
                         }
-
                         isActivited = !isActivited;
                         break;
-
                     case MotionEvent.ACTION_MOVE:
-
                         break;
                 }
                 return true;
@@ -224,24 +219,16 @@ public class ChatHeadService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        //Receive intent from MyService with instructions on what to do
         //Types = EMAIL, CURRENCY, PHONE
         String data_type = intent.getStringExtra("TYPE");
         String original_value = intent.getStringExtra("ORIGINAL");
-/*
-        String converted_value = intent.getStringExtra("CONVERTED");
-*/
         String currency_code = intent.getStringExtra("CODE");
         String email_address = intent.getStringExtra("EMAILADDRESS");
         String phone_number = intent.getStringExtra("PHONENUMBER");
         String converted_value = loadSavedConversion();
 
-      /*  try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
-
+        //Action for phone number data type
         if (data_type.equals("PHONE")){
             primaryTV.setText(phone_number);
             secondaryTV.setText("");
@@ -251,30 +238,28 @@ public class ChatHeadService extends Service {
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
             currencyYen.setVisibility(View.GONE);
             thirdTabIV.setVisibility(View.VISIBLE);
-
-
             firstTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     passPhoneIntent(phone_number);
-
                 }
             });
-
             secondTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     passMessagesIntent(phone_number);
                 }
             });
-
             thirdTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     passContactPhoneIntent(phone_number);
                 }
             });
-        }  else if(data_type.equals("EMAIL")){
+        }
+
+        //Action for Email data type
+        else if(data_type.equals("EMAIL")){
             primaryTV.setText(email_address);
             secondaryTV.setText("");
             firstTabIV.setBackgroundResource(R.drawable.ic_email_white_24dp);
@@ -300,17 +285,13 @@ public class ChatHeadService extends Service {
                 }
             });
 
-        } else if(data_type.equals("CURRENCY")){
+        }
+        //Action for currency data type
+        else if(data_type.equals("CURRENCY")){
             //primaryTV.setText("CAD" + " " + converted_value);
             parseJSON(currency_code,(original_value));
-
-            try {
-                TimeUnit.MILLISECONDS.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             String str = String.valueOf(loadSavedConversion());
+            //String str = String.valueOf(oldCurrencyValue);
             str = str.replaceAll("[^\\d.]", "");
             converted_value = str;
             Log.e("CHS: CONV", converted_value);
@@ -327,6 +308,7 @@ public class ChatHeadService extends Service {
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
             relativeLayout.setLayoutParams(rel_btn);
 
+            parseJSON(currency_code,(original_value));
 
             String finalConverted_value = converted_value;
             firstTabIV.setOnClickListener(new View.OnClickListener() {
@@ -334,12 +316,19 @@ public class ChatHeadService extends Service {
                 public void onClick(View view) {
                     //to USD
                     //TODO: FIX THIS USD
-                    String str = String.valueOf(finalConverted_value);
-                    str = str.replaceAll("[^\\d.]", "");
+                    if (!usdButtonClicked) {
+                        String str = String.valueOf(finalConverted_value);
+                        str = str.replaceAll("[^\\d.]", "");
 
-                    String conRes = String.valueOf(Double.valueOf(str) * 0.82);
-                    double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
-                    primaryTV.setText("USD " + String.valueOf(roundOff));
+                        String conRes = String.valueOf(Double.valueOf(str) * 0.82);
+                        double roundOff = Math.round(Double.valueOf(conRes) * 100.0) / 100.0;
+                        primaryTV.setText("USD " + String.valueOf(roundOff));
+                        usdButtonClicked = true;
+                        usdValue = String.valueOf(roundOff);
+                    }
+                    else{
+                        primaryTV.setText("USD " + usdValue);
+                    }
 
                     chart.setVisibility(View.VISIBLE);
                     chart.setViewPortOffsets(0, 0, 0, 0);
@@ -376,11 +365,19 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //to ERU
-                    String str = String.valueOf(finalConverted_value1);
-                    str = str.replaceAll("[^\\d.]", "");
+                    if (!eurButtonClicked) {
+                        String str = String.valueOf(finalConverted_value1);
+                        str = str.replaceAll("[^\\d.]", "");
 
-                    String conRes = String.valueOf(Double.valueOf(str) * 0.69);
-                    primaryTV.setText("EUR " + String.valueOf(roundThis(Double.valueOf(conRes))));
+                        String conRes = String.valueOf(Double.valueOf(str) * 0.69);
+                        primaryTV.setText("EUR " + String.valueOf(roundThis(Double.valueOf(conRes))));
+                        eurButtonClicked = true;
+                        eurValue = String.valueOf(roundThis(Double.valueOf(conRes)));
+                    }
+                    else{
+                        primaryTV.setText("EUR " + eurValue);
+
+                    }
 
                     chart.setVisibility(View.VISIBLE);
                     chart.setViewPortOffsets(0, 0, 0, 0);
@@ -431,11 +428,18 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     //YEN
-                    String str = String.valueOf(finalConverted_value1);
-                    str = str.replaceAll("[^\\d.]", "");
+                    if (!yenButtonClicked) {
+                        String str = String.valueOf(finalConverted_value1);
+                        str = str.replaceAll("[^\\d.]", "");
 
-                    String conRes = String.valueOf(Double.valueOf(str) * 90.89);
-                    primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
+                        String conRes = String.valueOf(Double.valueOf(str) * 90.89);
+                        primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
+                        yenButtonClicked = true;
+                        yenValue = String.valueOf(roundThis(Double.valueOf(conRes)));
+                    }
+                    else{
+                        primaryTV.setText("YEN " +yenValue);
+                    }
 
                     chart.setVisibility(View.VISIBLE);
                     chart.setViewPortOffsets(0, 0, 0, 0);
@@ -493,6 +497,7 @@ public class ChatHeadService extends Service {
         minimizeChatHead();
     }
 
+    //Method to pass intent with email data
     public void passContactEmailIntent(String email){
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
@@ -504,6 +509,7 @@ public class ChatHeadService extends Service {
         minimizeChatHead();
     }
 
+    //Method to start intent with text message data
     public void passMessagesIntent(String phonenumber){
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
         sendIntent.setData(Uri.parse("sms:"+phonenumber));
@@ -512,6 +518,7 @@ public class ChatHeadService extends Service {
         minimizeChatHead();
     }
 
+    //Method to start intent with phone data
     public void passPhoneIntent(String phonenumber){
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse("tel:" + phonenumber));
@@ -544,7 +551,6 @@ public class ChatHeadService extends Service {
 
     }
 
-
     com.android.volley.RequestQueue requestQueue;
     public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
@@ -569,7 +575,7 @@ public class ChatHeadService extends Service {
                                     //Toast.makeText(getApplicationContext(), "ValueCH: " + String.valueOf(conversion), Toast.LENGTH_SHORT).show();
                                     convertResult[0] = String.valueOf(conversion);
                                     saveCoversion(String.valueOf(conversion * 1.22));
-
+                                    //oldCurrencyValue = String.valueOf(conversion * 1.22);
                                     primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
                                     Log.e("TEST_VAL: ", convertResult[0]);
                                     parseConvertResult = convertResult[0];
@@ -610,12 +616,13 @@ public class ChatHeadService extends Service {
         editor.commit();
     }
 
+    //Method to round a number to two decimal places
     public double roundThis(double num){
         return Math.round(num * 100.0) / 100.0;
     }
 
+    //Method to setup interactive graph with data
     private void setUSDData(double[] tempArray){
-
         float temp = 1;
         ArrayList<Entry> yVals = new ArrayList<Entry>();
 
@@ -624,8 +631,6 @@ public class ChatHeadService extends Service {
             temp = temp + 1;
             yVals.add(new Entry(temp,current));
         }
-
-
         LineDataSet set1;
 
         if (chart.getData() != null &&
@@ -664,6 +669,14 @@ public class ChatHeadService extends Service {
 
             chart.setData(data);
         }
+
+    }
+
+    public String convertToCurrency(String rawStr){
+        String str = String.valueOf(rawStr);
+        str = str.replaceAll("[^\\d.]", "");
+        return str;
+
 
     }
 

@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(MainActivity.this);
         }
 
-        String nodata="<br/>&#8226; Version " + versionName + "<br/>&#8226; Made by Andrew, Asad, Kumail, Nina, HackTheNorth 2017<br/>&#8226; github.com/aanguyen<br/>&#8226; github.com/asadmansr<br/>&#8226; github.com/kumailn<br/>";
+        String nodata="<br/>&#8226; Version " + versionName + "<br/>&#8226; Made by Andrew, Asad, Kumail @ HackTheNorth 2017<br/>&#8226; github.com/aanguyen<br/>&#8226; github.com/asadmansr<br/>&#8226; github.com/kumailn<br/>";
         final SpannableString ss = new SpannableString(Html.fromHtml(nodata));
         Linkify.addLinks(ss, Linkify.ALL);
 

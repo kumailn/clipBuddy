@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +43,8 @@ public class MyService extends Service {
     public static boolean currencyDetected;
     public static boolean emailDetected;
     public static boolean phoneDetected;
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     String[] convertResult = new String[1];
     public static String currencyCodeTwo;
     public static String parseConvertResult;
@@ -186,9 +191,21 @@ public class MyService extends Service {
                         break;
                     }
                 }
+                int i = 0;
+                while (!Character.isAlphabetic(email.charAt(email.length() - i -1)) &&
+                        !Character.isDigit(email.charAt(email.length() - i -1))) {
+                    i++;
+                }
+                email = email.substring(0,email.length()-i);
+                Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
+                if (matcher.find()) {
+                    emailDetected = true;
+                }
+                /*
                 if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
                     emailDetected = true;
                 }
+                */
             }
             //Check for phone number
             else {

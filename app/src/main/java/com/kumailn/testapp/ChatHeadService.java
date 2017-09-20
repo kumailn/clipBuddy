@@ -174,8 +174,6 @@ public class ChatHeadService extends Service {
                     public void onAnimationRepeat(Animation animation) {
                     }
                 });
-
-
                 //close the service and remove the chat head from the window
             }
         });

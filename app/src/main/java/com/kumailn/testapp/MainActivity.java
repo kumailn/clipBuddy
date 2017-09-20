@@ -27,6 +27,9 @@ import android.view.animation.AnimationSet;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.facebook.stetho.Stetho;
+
 import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         ClipData clipData = ClipData.newPlainText("", "");
         clipService.setPrimaryClip(clipData);
 
+        Stetho.initializeWithDefaults(this);
 
         Button myButton = (Button)findViewById(R.id.button);
         Button b2 = (Button)findViewById(R.id.button2);
@@ -174,14 +178,14 @@ public class MainActivity extends AppCompatActivity {
 
     public int loadNumericInstance(){
         SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
-        int myMethod = sharedPreferences.getInt("NUM", defaultMethod);
+        int myMethod = sharedPreferences.getInt("NUMERIC", defaultMethod);
         return (myMethod);
     }
 
     public void saveNumericInstance(int newNum){
         SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("NUM", newNum);
+        editor.putInt("NUMERIC", newNum);
         editor.commit();
     }
 

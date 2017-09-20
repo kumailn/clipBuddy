@@ -7,7 +7,7 @@
     android:backgroundTint="@color/colorAccent3"
 
     android:background="@color/colorAccent3"
-    tools:context="com.kumailn.testapp.MainActivity">
+    tools:context="com.kumailn.clipbuddy.MainActivity">
 
     <Button
         android:id="@+id/button2"

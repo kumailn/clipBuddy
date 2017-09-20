@@ -1,4 +1,4 @@
-package com.kumailn.testapp;
+package com.kumailn.clipbuddy;
 
 import android.app.Service;
 import android.content.Context;
@@ -9,7 +9,6 @@ import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.ContactsContract;
-import android.support.annotation.IntDef;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,12 +18,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -35,14 +32,7 @@ import com.github.mikephil.charting.charts.LineChart;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -54,13 +44,6 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import static android.R.attr.data;
-import static android.R.attr.fingerprintAuthDrawable;
-import static android.R.attr.textColorTertiary;
-import static android.R.attr.width;
-import static com.kumailn.testapp.R.attr.height;
 
 public class ChatHeadService extends Service {
     private WindowManager mWindowManager;

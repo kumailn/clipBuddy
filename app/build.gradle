@@ -9,7 +9,7 @@ android {
             enabled true
         }
 
-        applicationId "com.kumailn.testapp"
+        applicationId 'com.kumailn.clipbuddy'
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
@@ -22,7 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/LICENSE.txt'
@@ -35,24 +34,22 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
     configurations {
         compile.exclude group: "org.apache.httpcomponents", module: "httpclient"
     }
-
     compile('org.apache.httpcomponents:httpmime:4.3') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }

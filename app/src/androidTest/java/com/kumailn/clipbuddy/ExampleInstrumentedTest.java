@@ -1,4 +1,4 @@
-package com.kumailn.testapp;
+package com.kumailn.clipbuddy;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

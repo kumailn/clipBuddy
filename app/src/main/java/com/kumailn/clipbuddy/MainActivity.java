@@ -1,4 +1,4 @@
-package com.kumailn.testapp;
+package com.kumailn.clipbuddy;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -29,8 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.stetho.Stetho;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     final String versionName = BuildConfig.VERSION_NAME;
@@ -119,8 +117,6 @@ public class MainActivity extends AppCompatActivity {
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i2 = new Intent(MainActivity.this, secondService.class);
-                startService(i2);
             }
         });
     }

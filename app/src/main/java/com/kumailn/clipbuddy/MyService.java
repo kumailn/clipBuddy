@@ -1,4 +1,4 @@
-package com.kumailn.testapp;
+package com.kumailn.clipbuddy;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -6,8 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.audiofx.LoudnessEnhancer;
-import android.net.http.RequestQueue;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,25 +14,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.xe.xecdApiClient.config.XecdApiConfigBean;
-import com.xe.xecdApiClient.exception.XecdApiException;
-import com.xe.xecdApiClient.model.ConvertFromResponse;
 import com.xe.xecdApiClient.service.XecdApiService;
-import com.xe.xecdApiClient.service.XecdApiServiceFactory;
-import java.io.File;
-import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Currency;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.kumailn.testapp.MainActivity.defaultMethod;
+import static com.kumailn.clipbuddy.MainActivity.defaultMethod;
 
 public class MyService extends Service {
     public static int num_clips;

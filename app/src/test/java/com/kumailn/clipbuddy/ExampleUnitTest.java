@@ -1,4 +1,4 @@
-package com.kumailn.testapp;
+package com.kumailn.clipbuddy;
 
 import org.junit.Test;
 

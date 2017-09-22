@@ -533,7 +533,7 @@ public class ChatHeadService extends Service {
     }
 
     com.android.volley.RequestQueue requestQueue;
-    public String parseJSON(String code, String number){
+    public String parseJSON1(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "https://api.myjson.com/bins/1gjfk5";
         Log.e(jsonURL, "");
@@ -583,6 +583,38 @@ public class ChatHeadService extends Service {
         //Log.e("CHS: ", parseConvertResult);
         return "";
     }
+
+    //Test method
+    public String parseJSON(String code, String number){
+        requestQueue = Volley.newRequestQueue(this);
+        String jsonURL = "http://www.apilayer.net/api/live?access_key=4f63a9b9e01088ffc7ad37cd8a0683de&format=1";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        double conversion = 1;
+                        try {
+                            String resultConversionString = response.getJSONObject("quotes").getString("USD" + code);
+                            conversion = Double.parseDouble(number) / Double.parseDouble(resultConversionString);
+                            Log.e("VOLLEY_TEST", resultConversionString);
+                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
+                            saveCoversion(String.valueOf(conversion * 1.22));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", "ERROR");
+                    }
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
+        return "";
+    }
+
 
     public String loadSavedConversion(){
         SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);

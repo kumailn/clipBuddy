@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.ContactsContract;
@@ -22,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -30,6 +33,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,7 +47,17 @@ import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+
+import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
 
 public class ChatHeadService extends Service {
     private WindowManager mWindowManager;
@@ -417,9 +431,19 @@ public class ChatHeadService extends Service {
                         primaryTV.setText("YEN " + String.valueOf(roundThis(Double.valueOf(conRes))));
                         yenButtonClicked = true;
                         yenValue = String.valueOf(roundThis(Double.valueOf(conRes)));
+                        try {
+                            String aa;
+                            JSONObject jarray = new JSONObject(readFromFile());
+                            aa = jarray.getJSONObject("quotes").getString("USD" + "PKR");
+                            Log.e("SAVEDVALUE", aa);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                     else{
                         primaryTV.setText("YEN " +yenValue);
+                        readFromFile();
                     }
 
                     chart.setVisibility(View.VISIBLE);
@@ -471,7 +495,8 @@ public class ChatHeadService extends Service {
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         intent.putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // this will make such that when user returns to your app, your app is displayed, instead of the email app.
         if (intent.resolveActivity(getPackageManager()) != null) {
             this.startActivity(intent);
         }
@@ -483,7 +508,8 @@ public class ChatHeadService extends Service {
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         intent.putExtra(ContactsContract.Intents.Insert.EMAIL, email);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // this will make such that when user returns to your app, your app is displayed, instead of the email app.
         if (intent.resolveActivity(getPackageManager()) != null) {
             getApplicationContext().startActivity(intent);
         }
@@ -527,12 +553,12 @@ public class ChatHeadService extends Service {
         buttonLL.setVisibility(View.GONE);
         relativeLayout.setVisibility(View.GONE);
         closeButton.setVisibility(View.GONE);
-
         isActivited = false;
-
     }
 
     com.android.volley.RequestQueue requestQueue;
+
+    //Old static json query method
     public String parseJSON1(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "https://api.myjson.com/bins/1gjfk5";
@@ -584,7 +610,7 @@ public class ChatHeadService extends Service {
         return "";
     }
 
-    //Test method
+    //Updated method to handle realtime conversions
     public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "http://www.apilayer.net/api/live?access_key=4f63a9b9e01088ffc7ad37cd8a0683de&format=1";
@@ -592,10 +618,12 @@ public class ChatHeadService extends Service {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        double conversion = 1;
+                        double conversion = 7862;
                         try {
                             String resultConversionString = response.getJSONObject("quotes").getString("USD" + code);
                             conversion = Double.parseDouble(number) / Double.parseDouble(resultConversionString);
+                            writeToFile(String.valueOf(response));
+                            Log.e("C_TEST", String.valueOf(conversion));
                             Log.e("VOLLEY_TEST", resultConversionString);
                             primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
                             saveCoversion(String.valueOf(conversion * 1.22));
@@ -608,6 +636,19 @@ public class ChatHeadService extends Service {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("VOLLEY", "ERROR");
+                        double conversion = 7862;
+                        try {
+                            String aa;
+                            JSONObject jarray = new JSONObject(readFromFile());
+                            aa = jarray.getJSONObject("quotes").getString("USD" + code);
+                            conversion = Double.parseDouble(number) / Double.parseDouble(aa);
+                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
+                            saveCoversion(String.valueOf(conversion * 1.22));
+                            Log.e("SAVEDVALUE", aa);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(), "NIA", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -685,6 +726,91 @@ public class ChatHeadService extends Service {
 
     }
 
+    //Method to check if device has an internet connection
+    private boolean checkInternetAccess() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return (activeNetworkInfo != null && activeNetworkInfo.isConnected());
+    }
+
+    public static boolean hasInternetAccess() {
+        if (true) {
+            try {
+                HttpURLConnection urlc = (HttpURLConnection)
+                        (new URL("http://clients3.google.com/generate_204")
+                                .openConnection());
+                urlc.setRequestProperty("User-Agent", "Android");
+                urlc.setRequestProperty("Connection", "close");
+                urlc.setConnectTimeout(1500);
+                urlc.connect();
+                return (urlc.getResponseCode() == 204 &&
+                        urlc.getContentLength() == 0);
+            } catch (IOException e) {
+                Log.e("", "Error checking internet connection", e);
+            }
+        } else {
+            Log.d("", "No network available!");
+        }
+        return false;
+    }
+
+    public boolean isInternetWorking() {
+        boolean success = false;
+        try {
+            URL url = new URL("https://google.com");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(10000);
+            connection.connect();
+            success = connection.getResponseCode() == 200;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return success;
+    }
+
+    private void writeToFile(String data) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("config.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+
+    private String readFromFile() {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = getApplicationContext().openFileInput("config.txt");
+
+            if ( inputStream != null ) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ( (receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        }
+        catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+        Log.e("RFF", ret);
+        return ret;
+    }
+
     public String convertToCurrency(String rawStr){
         String str = String.valueOf(rawStr);
         str = str.replaceAll("[^\\d.]", "");
@@ -692,5 +818,7 @@ public class ChatHeadService extends Service {
 
 
     }
+
+
 
 }

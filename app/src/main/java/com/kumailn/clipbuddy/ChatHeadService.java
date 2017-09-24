@@ -656,7 +656,6 @@ public class ChatHeadService extends Service {
         return "";
     }
 
-
     public String loadSavedConversion(){
         SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
         String myMethod = sharedPreferences.getString("CON", defaultMethod);
@@ -724,14 +723,6 @@ public class ChatHeadService extends Service {
             chart.setData(data);
         }
 
-    }
-
-    //Method to check if device has an internet connection
-    private boolean checkInternetAccess() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return (activeNetworkInfo != null && activeNetworkInfo.isConnected());
     }
 
     public static boolean hasInternetAccess() {

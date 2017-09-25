@@ -34,8 +34,11 @@ public class MyService extends Service {
     public static boolean currencyDetected;
     public static boolean emailDetected;
     public static boolean phoneDetected;
+    public static boolean webDetected;
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern VALID_URL_REGEX =
+            Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)", Pattern.CASE_INSENSITIVE);
     String[] convertResult = new String[1];
     public static String currencyCodeTwo;
     public static String parseConvertResult;
@@ -100,15 +103,19 @@ public class MyService extends Service {
             currencyDetected = false;
             emailDetected = false;
             phoneDetected = false;
+            webDetected = false;
             String[] code_array = {"$", "€", "¥", "£"};
             String currencySymbol = "";
             String currencyCode = "";
             String email = "";
             String phoneNum = "";
             String phoneSend = "";
+            String url = "";
             ClipData cd = cb.getPrimaryClip();
+
             String clippedString = cd.getItemAt(0).getText().toString();
             clippedString = String.copyValueOf(clippedString.toCharArray());
+            String[] words = clippedString.split(" ");
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
 
             //Detect if the clipped string has a currency code or symbol
@@ -175,10 +182,9 @@ public class MyService extends Service {
 
             //Checks and (sort of) validates email
             if (clippedString.contains("@")) {
-                String[] parts = clippedString.split(" ");
-                for (String word : parts) {
-                    if (word.contains("@")) {
-                        email = word;
+                for (String part : words) {
+                    if (part.contains("@")) {
+                        email = part;
                         break;
                     }
                 }
@@ -192,14 +198,21 @@ public class MyService extends Service {
                 if (matcher.find()) {
                     emailDetected = true;
                 }
-                /*
-                if (email.substring(email.indexOf("@"), email.length()).contains(".")) {
-                    emailDetected = true;
+            }
+            else if (!emailDetected) {
+                for (String part : words) {
+                    Matcher matcher = VALID_URL_REGEX.matcher(part);
+                    if (matcher.find()) {
+                        webDetected = true;
+                        url = part;
+                        break;
+                    }
                 }
-                */
+                //TODO: further cleanse the matched URL, http/https, www, etc?
+                //Matched URL may have any or none of those
             }
             //Check for phone number
-            else {
+            else if (!webDetected) {
             //TODO: look at finding out where the call is going to? (international codes)
             //Takes the first block of non-letters. and looks for a sub-block of 7<n<15 numbers
                 phoneSend = clippedString.replaceAll(" ", "");
@@ -218,6 +231,7 @@ public class MyService extends Service {
                     phoneNum = phoneSend;
                 }
             }
+
             if (currencyDetected) {
                 String currencyValue = clippedString.replaceAll(" ", "");
                 currencyValue = currencyValue.replaceAll("[^\\d.]", "");
@@ -272,6 +286,17 @@ public class MyService extends Service {
                     startService(ii);
                     stopService(new Intent(this, MyService.class));
                 }
+            }
+            else if (webDetected) {
+                /*
+                Log.e("(W)VALUE: ", url);
+                Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
+                ii.putExtra("TYPE", "WEB");
+                ii.putExtra("URL", url);
+                if (num_clips > 0) {
+                    startService(ii);
+                }
+                */
             }
             else if (phoneDetected) {
                 //phoneNum is the nicely formatted string to display on the screen for 10 digit numbers

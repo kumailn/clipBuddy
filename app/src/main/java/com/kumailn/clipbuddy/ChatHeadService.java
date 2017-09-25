@@ -219,6 +219,7 @@ public class ChatHeadService extends Service {
         String currency_code = intent.getStringExtra("CODE");
         String email_address = intent.getStringExtra("EMAILADDRESS");
         String phone_number = intent.getStringExtra("PHONENUMBER");
+        String web_address = intent.getStringExtra("URL");
         String converted_value = loadSavedConversion();
 
         //Action for phone number data type
@@ -277,6 +278,13 @@ public class ChatHeadService extends Service {
                 }
             });
 
+        }
+        else if (data_type.equals("WEB")) {
+            /*
+            primaryTV.setText(web_address);
+            secondaryTV.setText("");
+            firstTabIV.setBackgroundResource(R.drawable.)
+            */
         }
         //Action for currency data type
         else if(data_type.equals("CURRENCY")){

@@ -110,8 +110,6 @@ public class ChatHeadService extends Service {
 
         //Inflate the chatHeadView
         mChatHeadView = LayoutInflater.from(this).inflate(R.layout.chat_head, null);
-
-
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -269,7 +267,6 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     passEmailIntent(email_address);
-
                 }
             });
 
@@ -371,7 +368,6 @@ public class ChatHeadService extends Service {
                     }
                     else{
                         primaryTV.setText("EUR " + eurValue);
-
                     }
 
                     chart.setVisibility(View.VISIBLE);
@@ -477,9 +473,7 @@ public class ChatHeadService extends Service {
                 }
             });
         }
-
-
-
+        //Return as a non-sticky service so it is permenantly killed
         return START_NOT_STICKY;
     }
 
@@ -533,7 +527,7 @@ public class ChatHeadService extends Service {
         getApplicationContext().startActivity(intent);
         minimizeChatHead();
     }
-
+    //Method to start intent with email data
     public void passEmailIntent(String emailAddress){
         Intent intent = new Intent(Intent.ACTION_SENDTO); // it's not ACTION_SEND
         intent.setType("text/plain");
@@ -544,7 +538,7 @@ public class ChatHeadService extends Service {
         getBaseContext().startActivity(intent);
         minimizeChatHead();
     }
-
+    //Method to mimize the chat head bubble
     private void minimizeChatHead(){
         Animation expandOut = AnimationUtils.loadAnimation(getBaseContext(), R.anim.animation_close);
         relativeLayout.startAnimation(expandOut);
@@ -556,13 +550,14 @@ public class ChatHeadService extends Service {
         isActivited = false;
     }
 
+    //Initialize the volley request queue
     com.android.volley.RequestQueue requestQueue;
 
     //Old static json query method
     public String parseJSON1(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "https://api.myjson.com/bins/1gjfk5";
-        Log.e(jsonURL, "");
+        //Log.e(jsonURL, "");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -610,7 +605,7 @@ public class ChatHeadService extends Service {
         return "";
     }
 
-    //Updated method to handle realtime conversions
+    //Updated method to handle realtime conversions + save JSON file to local storage
     public String parseJSON(String code, String number){
         requestQueue = Volley.newRequestQueue(this);
         String jsonURL = "http://www.apilayer.net/api/live?access_key=4f63a9b9e01088ffc7ad37cd8a0683de&format=1";
@@ -621,11 +616,12 @@ public class ChatHeadService extends Service {
                         double conversion = 7862;
                         try {
                             String resultConversionString = response.getJSONObject("quotes").getString("USD" + code);
+                            String currentCAD = response.getJSONObject("quotes").getString("USD" + "CAD");
                             conversion = Double.parseDouble(number) / Double.parseDouble(resultConversionString);
                             writeToFile(String.valueOf(response));
                             Log.e("C_TEST", String.valueOf(conversion));
                             Log.e("VOLLEY_TEST", resultConversionString);
-                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
+                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(currentCAD) )));
                             saveCoversion(String.valueOf(conversion * 1.22));
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -641,8 +637,9 @@ public class ChatHeadService extends Service {
                             String aa;
                             JSONObject jarray = new JSONObject(readFromFile());
                             aa = jarray.getJSONObject("quotes").getString("USD" + code);
+                            String bb = jarray.getJSONObject("quotes").getString("USDCAD");
                             conversion = Double.parseDouble(number) / Double.parseDouble(aa);
-                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * 1.22 )));
+                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(bb) )));
                             saveCoversion(String.valueOf(conversion * 1.22));
                             Log.e("SAVEDVALUE", aa);
                         } catch (JSONException e) {

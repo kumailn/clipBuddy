@@ -288,7 +288,6 @@ public class MyService extends Service {
                 }
             }
             else if (webDetected) {
-                /*
                 Log.e("(W)VALUE: ", url);
                 Intent ii = new Intent(getApplicationContext(), ChatHeadService.class);
                 ii.putExtra("TYPE", "WEB");
@@ -296,7 +295,6 @@ public class MyService extends Service {
                 if (num_clips > 0) {
                     startService(ii);
                 }
-                */
             }
             else if (phoneDetected) {
                 //phoneNum is the nicely formatted string to display on the screen for 10 digit numbers

@@ -280,15 +280,14 @@ public class ChatHeadService extends Service {
 
         }
         else if (data_type.equals("WEB")) {
-            /*
             primaryTV.setText(web_address);
-            secondaryTV.setText("");
-            firstTabIV.setBackgroundResource(R.drawable.)
-            */
+            secondaryTV.setText("URL Detected");
+/*
+            firstTabIV.setBackgroundResource
+*/
         }
         //Action for currency data type
         else if(data_type.equals("CURRENCY")){
-            //primaryTV.setText("CAD" + " " + converted_value);
             parseJSON(currency_code,(original_value));
             String str = String.valueOf(loadSavedConversion());
             //String str = String.valueOf(oldCurrencyValue);

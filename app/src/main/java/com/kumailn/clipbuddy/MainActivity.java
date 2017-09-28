@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         Button b2 = (Button)findViewById(R.id.button2);
         TextView mt = (TextView)findViewById(R.id.textView);
         ImageView sm = (ImageView)findViewById(R.id.smileyView);
-
+        String testSTRR = "ABDCDD";
         saveNumericInstance(loadNumericInstance() + 1);
 
         //Non default toolbar creation
@@ -106,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 /*Intent i = new Intent(getApplicationContext(), MyService.class);
                 stopService(i);*/
 
-
-
                 startService(new Intent(MainActivity.this, ChatHeadService.class));
                 finish();
                 return true;
@@ -150,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         // continue with delete
                     }
-
                 })
                 //.setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
@@ -238,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
                 AnimationSet animation2 = new AnimationSet(false); //change to false
                 animation2.addAnimation(fadeIn2);
                 sm.setAnimation(animation2);
-
                 Intent i = new Intent(getApplicationContext(), MyService.class);
                 Log.e("MyService: ", "Started ");
                 startService(i);

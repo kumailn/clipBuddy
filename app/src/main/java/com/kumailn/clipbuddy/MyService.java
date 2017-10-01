@@ -184,7 +184,8 @@ public class MyService extends Service {
             if (clippedString.contains("@") || (clippedString.contains("at") && clippedString.contains("dot"))) {
                 int atIndex = 0;
                 //TODO: change dotIndices to a linkedList to allow for unlimited number of dots in an email
-                int[] dotIndex = new int[5];//Shouldn't be more than 5 dots in an email right? LinkedList would probably be better but I'm lazy lol
+                int firstDotIndex = 0;
+                int lastDotIndex = 0;
                 for (int i = 0; i < words.length; i++) {
                     if (words[i].contains("@")) {
                         email = words[i];
@@ -192,11 +193,10 @@ public class MyService extends Service {
                     } else if (words[i].equals("at")) {
                         atIndex = i;
                     } else if (words[i].equals("dot")) {
-                        for (int j = 0; j < 5; j++) {
-                            if (dotIndex[j] == 0) {
-                                dotIndex[j] = i;
-                                break;
-                            }
+                        if (firstDotIndex == 0) {
+                            firstDotIndex = i;
+                        } else {
+                            lastDotIndex = i;
                         }
                     }
                 }
@@ -205,14 +205,13 @@ public class MyService extends Service {
                     //if the email doesn't have an "@", but rather has words that need to be parsed
                     int firstWord;
                     int lastWord = 0;
-                    for (int i = 0; i < 5; i++) {
-                        if (dotIndex[i] == 0) {
-                            lastWord = dotIndex[i-1] +1;
-                            Log.e("i is: ", String.valueOf(i));
-                            break;
-                        }
+                    if (atIndex < firstDotIndex) {
+                        lastWord = firstDotIndex + 1;
+                    } else {
+                        lastWord = lastDotIndex + 1;
                     }
-                    firstWord = (atIndex < dotIndex[0] ? atIndex-1 : dotIndex[0]-1 );
+
+                    firstWord = (atIndex < firstDotIndex ? atIndex-1 : firstDotIndex-1 );
                     StringBuilder parseEmail = new StringBuilder();
                     for (int i = firstWord; i <= lastWord ; i++) {
                         if (words[i].equals("dot")) {

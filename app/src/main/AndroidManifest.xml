@@ -20,6 +20,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,9 +34,14 @@
             android:name=".ChatHeadService"
             android:enabled="true"
             android:exported="true"
-            android:process=".chatHeatProcess"/>
+            android:process=".chatHeatProcess" />
 
-        <activity android:name=".Main2Activity"></activity>
+        <activity android:name=".Main2Activity" />
+
+        <receiver
+            android:name=".BootStarter"
+            android:enabled="true"
+            android:exported="true"></receiver>
     </application>
 
 </manifest>

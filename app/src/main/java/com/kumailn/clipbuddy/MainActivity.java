@@ -42,13 +42,15 @@ public class MainActivity extends AppCompatActivity {
         clipService.setPrimaryClip(clipData);
 
         Stetho.initializeWithDefaults(this);
-
+        Button button4 = (Button)findViewById(R.id.button4);
         Button myButton = (Button)findViewById(R.id.button);
         Button b2 = (Button)findViewById(R.id.button2);
         TextView mt = (TextView)findViewById(R.id.textView);
         ImageView sm = (ImageView)findViewById(R.id.smileyView);
         String testSTRR = "ABDCDD";
         saveNumericInstance(loadNumericInstance() + 1);
+
+        button4.setVisibility(View.GONE);
 
         //Non default toolbar creation
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -90,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MyService: ", "Started ");
             startService(i);
         }
+
+        button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
 
         myButton.setText("Service One");

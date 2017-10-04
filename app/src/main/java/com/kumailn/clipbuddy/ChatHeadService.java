@@ -814,6 +814,5 @@ public class ChatHeadService extends Service {
 
     }
 
-
-
+    
 }

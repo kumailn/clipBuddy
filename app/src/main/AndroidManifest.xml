@@ -38,15 +38,21 @@
             android:process=".chatHeatProcess" />
 
         <activity android:name=".Main2Activity" />
+        <activity android:name=".Pop" />
 
         <receiver
             android:name=".BootStarter"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".Float"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

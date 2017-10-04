@@ -9,10 +9,8 @@ public class BootStarter extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: This method is called when the BroadcastReceiver is receiving
-        // an Intent broadcast.
         Intent i2 = new Intent(context, MyService.class);
-        Log.e("MyService: ", "Started ");
+        Log.e("MyService: ", "Started on reboot");
         context.startService(i2);
     }
 }

@@ -235,6 +235,7 @@ public class MyService extends Service {
                     emailDetected = true;
                 }
             }
+            //url detection
             else if (!emailDetected) {
                 for (String part : words) {
                     Matcher matcher = VALID_URL_REGEX.matcher(part);
@@ -246,9 +247,11 @@ public class MyService extends Service {
                 }
                 //TODO: further cleanse the matched URL, http/https, www, etc?
                 //Matched URL may have any or none of those
+                Log.e("webdetect: ", String.valueOf(webDetected));
             }
             //Check for phone number
             else if (!webDetected) {
+                Log.e("hello", "test");
             //TODO: look at finding out where the call is going to? (international codes)
             //Takes the first block of non-letters. and looks for a sub-block of 7<n<15 numbers
                 phoneSend = clippedString.replaceAll(" ", "");
@@ -260,6 +263,7 @@ public class MyService extends Service {
                 if (phoneSend.length() > 7 && phoneSend.length() < 15) {
                     phoneDetected = true;
                 }
+                Log.e("phonesend:", phoneSend);
                 if (phoneSend.length() == 10) {  //probably a local canadian/us number?
                     phoneNum = String.format("(%s) %s-%s", phoneSend.substring(0,3), phoneSend.substring(3,6),
                             phoneSend.substring(6,10));

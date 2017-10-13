@@ -40,6 +40,7 @@ public class MyService extends Service {
     public static final Pattern VALID_URL_REGEX =
             Pattern.compile("[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)", Pattern.CASE_INSENSITIVE);
     String[] convertResult = new String[1];
+    public static final Pattern VALID_DOT_EMAIL_REGEX = Pattern.compile("([a-zA-z]+\\ +dot)?+ ?[a-z]+ ?+at ?+[a-z]+ ?dot+ +[a-z]+", Pattern.CASE_INSENSITIVE);
     public static String currencyCodeTwo;
     public static String parseConvertResult;
     private XecdApiService apiService;

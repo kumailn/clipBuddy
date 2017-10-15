@@ -8,6 +8,7 @@ import android.util.Log;
 public class BootStarter extends BroadcastReceiver {
 
     @Override
+    //BroadcastReceiver used to start clipBuddy after a restart automatically
     public void onReceive(Context context, Intent intent) {
         Intent i2 = new Intent(context, MyService.class);
         Log.e("MyService: ", "Started on reboot");

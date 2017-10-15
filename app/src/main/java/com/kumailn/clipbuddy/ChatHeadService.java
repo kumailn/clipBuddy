@@ -236,18 +236,24 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     passPhoneIntent(phone_number);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+
                 }
             });
             secondTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     passMessagesIntent(phone_number);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+
                 }
             });
             thirdTabIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     passContactPhoneIntent(phone_number);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+
                 }
             });
         }
@@ -255,6 +261,9 @@ public class ChatHeadService extends Service {
         //Action for Email data type
         else if(data_type.equals("EMAIL")){
             primaryTV.setText(email_address);
+            if(email_address.length()> 15){
+                primaryTV.setTextSize(22);
+            }
             secondaryTV.setText("");
             firstTabIV.setBackgroundResource(R.drawable.ic_email_white_24dp);
             secondTabIV.setBackgroundResource(R.drawable.ic_person_white_24dp);
@@ -268,6 +277,7 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     passEmailIntent(email_address);
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 }
             });
 
@@ -275,16 +285,35 @@ public class ChatHeadService extends Service {
                 @Override
                 public void onClick(View view) {
                     passContactEmailIntent(email_address);
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 }
             });
 
         }
         else if (data_type.equals("WEB")) {
+            Toast.makeText(getApplicationContext(), "YOOOO", Toast.LENGTH_SHORT).show();
             primaryTV.setText(web_address);
             secondaryTV.setText("URL Detected");
-/*
-            firstTabIV.setBackgroundResource
-*/
+            if(web_address.length()> 15){
+                primaryTV.setTextSize(22);
+            }
+            firstTabIV.setBackgroundResource(R.drawable.ic_email_white_24dp);
+            secondTabIV.setBackgroundResource(R.drawable.ic_person_white_24dp);
+            thirdTabIV.setBackgroundResource(R.drawable.ic_phone_white_24dp);
+            currencyYen.setVisibility(View.GONE);
+            thirdTabIV.setVisibility(View.VISIBLE);
+            thirdTabIV.setEnabled(false);
+            secondTabIV.setEnabled(false);
+            relativetabLayout.setBackgroundResource(R.drawable.buttons_tabs_disabled);
+
+            firstTabIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    passBrowserURLIntent(web_address);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            });
+
         }
         //Action for currency data type
         else if(data_type.equals("CURRENCY")){
@@ -517,6 +546,19 @@ public class ChatHeadService extends Service {
         minimizeChatHead();
     }
 
+    //Method to pass intent with URL data
+    public void passBrowserURLIntent(String URL){
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        Log.e("CurrentURL", URL);
+        i.setData(Uri.parse("http://" + URL.trim() ));
+        startActivity(i);
+        // this will make such that when user returns to your app, your app is displayed, instead of the email app.
+        if (i.resolveActivity(getPackageManager()) != null) {
+            getApplicationContext().startActivity(i);
+        }
+        minimizeChatHead();
+    }
+
     //Method to start intent with text message data
     public void passMessagesIntent(String phonenumber){
         Intent sendIntent = new Intent(Intent.ACTION_VIEW);
@@ -622,13 +664,13 @@ public class ChatHeadService extends Service {
                     public void onResponse(JSONObject response) {
                         double conversion = 7862;
                         try {
-                            String resultConversionString = response.getJSONObject("quotes").getString("USD" + code);
+                            String resultConversionString = response.getJSONObject("quotes").getString("USD" + code.trim());
                             String currentCAD = response.getJSONObject("quotes").getString("USD" + "CAD");
                             conversion = Double.parseDouble(number) / Double.parseDouble(resultConversionString);
                             writeToFile(String.valueOf(response));
                             Log.e("C_TEST", String.valueOf(conversion));
                             Log.e("VOLLEY_TEST", resultConversionString);
-                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(currentCAD) )));
+                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(currentCAD))));
                             saveCoversion(String.valueOf(conversion * 1.22));
                         } catch (JSONException e) {
                             e.printStackTrace();

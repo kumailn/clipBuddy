@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 //Class to handle all string parsing
 public class StringParser {
     public static Pattern emailRegex  = Pattern.compile("[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+(\\.[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+)*@([a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+([a-zA-Z0-9\\-]*)\\.)+[a-zA-z\\-]+");
-    public static Pattern verboseEmailRegex = Pattern.compile("[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+ *(dot *[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+)* *at *[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+ +( *dot *[a-zA-z0-9]+)+");
+    public static Pattern verboseEmailRegex = Pattern.compile("(?i)([a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+ *(dot *[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+)* *at *[a-zA-z0-9~!#$%^&*\\-\\_\\.+=]+ +( *dot *[a-zA-z0-9]+)+)");
     public static Pattern phoneNumberRegex = Pattern.compile("\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})\\s*");
     public static Pattern urlRegex = Pattern.compile("(https:\\/\\/)?(http:\\/\\/)?(www)?[a-zA-Z0-9\\-]+(\\.[a-zA-Z0-9\\-\\/?=+]+)+");
     public static Pattern leftCurrencySymbolRegex = Pattern.compile("[$€¥£₪₫\u20BD₩֏৲৳৻૱௹฿៛￥￠₺₹₳₱₣] *[0-9\\.]+");

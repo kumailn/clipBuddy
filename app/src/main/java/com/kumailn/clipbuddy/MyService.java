@@ -66,7 +66,6 @@ public class MyService extends Service {
             String[] words = clippedString.split(" ");
             Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
 
-
             if(!(StringParser.checkForCurrencySymbol(clippedString).equals("false"))){
                 String currencySymbolString = StringParser.checkForCurrencySymbol(clippedString);
                 String currencyCode = StringParser.convertCurrencySymboltoCode(StringParser.extractCurrencySymbolOrCode(currencySymbolString));
@@ -79,7 +78,7 @@ public class MyService extends Service {
                 String currencyCode = StringParser.extractCurrencySymbolOrCode(currencyCodeString);
                 String currencyValue = StringParser.currencyFormater(currencyCodeString, true);
 
-                intentFactory("CURRENCY", currencyValue, currencyCode.toUpperCase());
+                intentFactory("CURRENCY", currencyValue,     currencyCode.toUpperCase());
             }
 
             else if(!(StringParser.checkForStandardEmail(clippedString).equals("false"))){

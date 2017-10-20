@@ -11,7 +11,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="280dp"
         android:layout_alignParentTop="true"
         android:background="#FFFFFF"
         android:id="@+id/container_rl"
@@ -152,20 +152,6 @@
             android:layout_below="@id/button_ll"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <TextView
-            android:id="@+id/xe_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Powered by XE"
-            android:textColor="#757575"
-            android:fontFamily="sans-serif-condensed"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="8dp"
-            android:textSize="12sp"
-            />
     </RelativeLayout>
 
     <RelativeLayout
@@ -201,7 +187,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_close_white_24dp"
-            android:tint="#f20b26"
+            android:tint="#FFFFFF"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>

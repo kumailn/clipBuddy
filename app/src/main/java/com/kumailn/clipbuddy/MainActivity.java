@@ -28,10 +28,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.stetho.Stetho;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     final String versionName = BuildConfig.VERSION_NAME;
+    com.android.volley.RequestQueue requestQueue;
     public static int defaultMethod = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
         //THIS LINE IS IMPORTANT - TOOK 2 HOURS TO FIND
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        pasrseJSONLocationIPAddress("in", "");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
 
@@ -271,5 +282,35 @@ public class MainActivity extends AppCompatActivity {
         sm.setAnimation(animation2);
 
     }
-    }}
+
+
+    }
+
+    public String pasrseJSONLocationIPAddress(String code, String number){
+        requestQueue = Volley.newRequestQueue(this);
+        String jsonURL = "http://ip-api.com/json";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, jsonURL,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String result = response.getString("country");
+                            Log.e("ResultAPI: ", result);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", "ERROR");
+                    }
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
+        return "";
+    }
+}
 

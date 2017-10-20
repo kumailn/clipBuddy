@@ -132,7 +132,6 @@ public class ChatHeadService extends Service {
         thirdTabIV = (ImageView) mChatHeadView.findViewById(R.id.tab3);
         relativetabLayout = (RelativeLayout) mChatHeadView.findViewById(R.id.tab3_rl);
         currencyYen = (TextView) mChatHeadView.findViewById(R.id.tab3_tv);
-        xe_text = (TextView)mChatHeadView.findViewById(R.id.xe_tv);
         buttonLL = (LinearLayout) mChatHeadView.findViewById(R.id.button_ll);
         closeButton = (RelativeLayout) mChatHeadView.findViewById(R.id.close_rl);
         final RelativeLayout chatHeadImage = (RelativeLayout) mChatHeadView.findViewById(R.id.icon_rl);
@@ -330,7 +329,6 @@ public class ChatHeadService extends Service {
             currencyYen.setVisibility(View.VISIBLE);
             thirdTabIV.setVisibility(View.GONE);
             relativetabLayout.setBackgroundResource(R.drawable.button_tabs);
-            xe_text.setVisibility(View.VISIBLE);
 
             RelativeLayout.LayoutParams rel_btn = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);

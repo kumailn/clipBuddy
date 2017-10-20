@@ -9,6 +9,7 @@ import android.graphics.PixelFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -110,12 +111,24 @@ public class ChatHeadService extends Service {
 
         //Inflate the chatHeadView
         mChatHeadView = LayoutInflater.from(this).inflate(R.layout.chat_head, null);
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
+        final WindowManager.LayoutParams params;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }
+        else{
+            params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        }
+
 
         params.gravity = Gravity.TOP | Gravity.RIGHT;
         params.x = 0;
@@ -666,6 +679,7 @@ public class ChatHeadService extends Service {
                             String currentCAD = response.getJSONObject("quotes").getString("USD" + "CAD");
                             String resultConversionString = response.getJSONObject("quotes").getString("USD" + code.trim());
                             Log.e("DefaultCode", loadDefaultCode());
+                            writeToFile(String.valueOf(response));
                             if(!(loadDefaultCode().equals("Error"))){
                                 currentCAD = response.getJSONObject("quotes").getString("USD" + loadDefaultCode());
                                 codeTemp = loadDefaultCode();
@@ -691,13 +705,14 @@ public class ChatHeadService extends Service {
                             String aa;
                             JSONObject jarray = new JSONObject(readFromFile());
                             aa = jarray.getJSONObject("quotes").getString("USD" + code);
-                            String bb = jarray.getJSONObject("quotes").getString("USD" + loadDefaultCode());
+                            String bb = jarray.getJSONObject("quotes").getString("USD" + loadDefaultCode().trim());
                             conversion = Double.parseDouble(number) / Double.parseDouble(aa);
                             primaryTV.setText(loadDefaultCode() + " " + String.valueOf(roundThis(conversion * Double.parseDouble(bb) )));
                             saveCoversion(String.valueOf(conversion * 1.22));
                             Log.e("SAVEDVALUE", aa);
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Log.e("There was an", "error offline");
                         }
                         Toast.makeText(getApplicationContext(), "NIA", Toast.LENGTH_SHORT).show();
                     }

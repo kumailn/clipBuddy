@@ -63,11 +63,11 @@ public class StringParser {
 
         while(left.find()){
             searchResultsLeft.add(left.group().trim());
-            Log.e("LeftVerboseCurrencyFound: " , left.group());
+            Log.e("LeftvCurrencyFound: " , left.group());
         }
         while(right.find()){
             searchResultsLeft.add(right.group().trim());
-            Log.e("RightVerboseCurrencyFound: " , right.group());
+            Log.e("RightvCurrencyFound: " , right.group());
         }
 
         if(searchResultsLeft.size() >= 1){
@@ -202,8 +202,58 @@ public class StringParser {
                 return "USD";
             case "Pakistan":
                 return "PKR";
-        }
+            case "India":
+                return "INR";
+            case "Thailand":
+                return "THB";
+            case "Vietnam":
+                return "VND";
+            case "Portugal":
+                return "EUR";
+            case "Spain":
+                return "EUR";
+            case "United Kingdom":
+                return "GBP";
+            case "Ireland":
+                return "EUR";
+            case "Netherlands":
+                return "EUR";
+            case "Denmark":
+                return "DKK";
+            case "Italy":
+                return "EUR";
+            case "Switzerland":
+                return "CHF";
+            case "Poland":
+                return "PLN";
+            case "Norway":
+                return "NOK";
+            case "Belgium":
+                return "EUR";
+            case "France":
+                return "EUR";
+            case "Sweden":
+                return "SEK";
+            case "Austria":
+                return "ATS";
+            case "Germany":
+                return "EUR";
+            case "Finland":
+                return "EUR";
+            case "Bangladesh":
+                return "BDT";
+            case "Buthan":
+                return "BTN";
+            case "China":
+                return "CNY";
+            case "Russia":
+                return "RUB";
+            case "Singapore":
+                return "SGD";
+            default:
+                return "Error";
 
-        return "";
+
+        }
     }
 }

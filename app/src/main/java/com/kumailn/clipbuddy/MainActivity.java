@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.internal.http.multipart.StringPart;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -295,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String result = response.getString("country");
+                            saveLocationCurrencyCode(StringParser.countryToCurrencyCode(result));
                             Log.e("ResultAPI: ", result);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -311,6 +313,13 @@ public class MainActivity extends AppCompatActivity {
         );
         requestQueue.add(jsonObjectRequest);
         return "";
+    }
+
+    public void saveLocationCurrencyCode(String currencyCode){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("DefaultCode", currencyCode);
+        editor.commit();
     }
 }
 

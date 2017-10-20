@@ -661,17 +661,24 @@ public class ChatHeadService extends Service {
                     @Override
                     public void onResponse(JSONObject response) {
                         double conversion = 7862;
+                        String codeTemp = "CAD";
                         try {
-                            String resultConversionString = response.getJSONObject("quotes").getString("USD" + code.trim());
                             String currentCAD = response.getJSONObject("quotes").getString("USD" + "CAD");
+                            String resultConversionString = response.getJSONObject("quotes").getString("USD" + code.trim());
+                            Log.e("DefaultCode", loadDefaultCode());
+                            if(!(loadDefaultCode().equals("Error"))){
+                                currentCAD = response.getJSONObject("quotes").getString("USD" + loadDefaultCode());
+                                codeTemp = loadDefaultCode();
+                                Log.e("LocationCode", "Set" + currentCAD);
+                            }
                             conversion = Double.parseDouble(number) / Double.parseDouble(resultConversionString);
-                            writeToFile(String.valueOf(response));
                             Log.e("C_TEST", String.valueOf(conversion));
                             Log.e("VOLLEY_TEST", resultConversionString);
-                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(currentCAD))));
+                            primaryTV.setText(codeTemp + " " + String.valueOf(roundThis(conversion * Double.parseDouble(currentCAD))));
                             saveCoversion(String.valueOf(conversion * 1.22));
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            Log.e("There was", "an error");
                         }
                     }
                 },
@@ -684,9 +691,9 @@ public class ChatHeadService extends Service {
                             String aa;
                             JSONObject jarray = new JSONObject(readFromFile());
                             aa = jarray.getJSONObject("quotes").getString("USD" + code);
-                            String bb = jarray.getJSONObject("quotes").getString("USDCAD");
+                            String bb = jarray.getJSONObject("quotes").getString("USD" + loadDefaultCode());
                             conversion = Double.parseDouble(number) / Double.parseDouble(aa);
-                            primaryTV.setText("CAD " + String.valueOf(roundThis(conversion * Double.parseDouble(bb) )));
+                            primaryTV.setText(loadDefaultCode() + " " + String.valueOf(roundThis(conversion * Double.parseDouble(bb) )));
                             saveCoversion(String.valueOf(conversion * 1.22));
                             Log.e("SAVEDVALUE", aa);
                         } catch (JSONException e) {
@@ -703,6 +710,12 @@ public class ChatHeadService extends Service {
     public String loadSavedConversion(){
         SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
         String myMethod = sharedPreferences.getString("CON", defaultMethod);
+        return (myMethod);
+    }
+
+    public String loadDefaultCode(){
+        SharedPreferences sharedPreferences = getSharedPreferences("myData", Context.MODE_PRIVATE);
+        String myMethod = sharedPreferences.getString("DefaultCode", "CAD");
         return (myMethod);
     }
 

@@ -84,8 +84,8 @@ public class StringParser {
         Matcher matcher = emailRegex.matcher(inputString);
 
         while(matcher.find()){
-            searchResults.add(matcher.group().trim());
-            Log.e("EmailFound: " , matcher.group());
+            searchResults.add(matcher.group().trim().toLowerCase());
+            Log.e("EmailFound: " , matcher.group().toLowerCase());
         }
         if(searchResults.size() >= 1){
             return searchResults.get(0);
@@ -98,8 +98,8 @@ public class StringParser {
         Matcher matcher = verboseEmailRegex.matcher(inputString);
 
         while(matcher.find()){
-            searchResults.add(matcher.group().trim());
-            Log.e("verboseEmailFound: " , matcher.group());
+            searchResults.add(matcher.group().trim().toLowerCase());
+            Log.e("verboseEmailFound: " , matcher.group().toLowerCase());
         }
 
         if(searchResults.size() >= 1){

@@ -61,10 +61,18 @@ public class MyService extends Service {
         if ((cb.hasPrimaryClip())) {
             ClipData cd = cb.getPrimaryClip();
 
-            String clippedString = cd.getItemAt(0).getText().toString();
-            clippedString = String.copyValueOf(clippedString.toCharArray());
+            String clippedString;
+            try{
+                clippedString = cd.getItemAt(0).getText().toString();
+                clippedString = String.copyValueOf(clippedString.toCharArray());
+            }
+            catch(Exception e){
+                //Catch clips that are not text
+                clippedString = "NULL";
+            }
+
             String[] words = clippedString.split(" ");
-            Log.e("CLIPBOARD: ", cd.getItemAt(0).getText().toString());
+            Log.e("CLIPBOARD: ", clippedString);
 
             if(!(StringParser.checkForCurrencySymbol(clippedString).equals("false"))){
                 String currencySymbolString = StringParser.checkForCurrencySymbol(clippedString);

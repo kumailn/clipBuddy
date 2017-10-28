@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -34,7 +32,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,14 +55,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static com.github.mikephil.charting.charts.Chart.LOG_TAG;
-
 public class ChatHeadService extends Service {
     private WindowManager mWindowManager;
     private View mChatHeadView;
     private boolean isActivited = false;
     String[] convertResult = new String[1];
-    public static String currencyCodeTwo;
     public static String parseConvertResult;
     public static String defaultMethod = "";
     public static boolean usdButtonClicked = false;
@@ -74,7 +68,6 @@ public class ChatHeadService extends Service {
     public static String usdValue = "";
     public static String eurValue= "";
     public static String yenValue = "";
-    public static String oldCurrencyValue = "";
     TextView primaryTV;
     TextView secondaryTV;
     ImageView firstTabIV;
@@ -88,13 +81,10 @@ public class ChatHeadService extends Service {
     String temp = "";
 
     LineChart chart;
-    TextView xe_text;
 
     double[] cadToUSD = {0.7960,0.7947,0.7946,0.7950,0.7958,0.7984,0.8019,0.8012,0.8012,0.7999,0.7980,0.7924,0.7978,0.8075,0.8066,0.8066,0.8059,0.8082,0.8188,0.8226,0.8241,0.8226,0.8223,0.8246,0.8221,0.8186,0.8196,0.8191,0.8199};
     double[] cadToEUR = {0.6775,0.6758,0.6756,0.6724,0.6743,0.6761,0.6748,0.6720,0.6719,0.6679,0.6640,0.6660,0.6717,0.6801,0.6800,0.6800,0.6770,0.6788,0.6863,0.6858,0.6847,0.6835,0.6831,0.6891,0.6872,0.6888,0.6898,0.6858,0.6863};
     double[] cadToYEN = {87.1053,86.7879,86.7784,86.5170,86.8616,87.2843,87.5665,87.6022,87.6928,87.3543,87.1234,87.3990,87.9150,88.9885,88.9347,88.9333,88.3738,87.8836,89.2258,89.1636,88.8860,88.7094,88.6609,89.9702,90.4703,90.5865,90.7420,90.7823,90.8905};
-
-
 
     public ChatHeadService() {
     }
